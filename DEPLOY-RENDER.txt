@@ -41,14 +41,59 @@ each POST is stored in the tables from database/schema.postgresql.sql
 
 (On Windows PowerShell, use psql with $env:DATABASE_URL.)
 
+Without installing psql (good for Render free + local Windows)
+---------------------------------------------------------------
+1. In Render: open your **PostgreSQL** → **Connections** → copy **External**
+   Database URL (your laptop cannot use the Internal URL).
+2. From your project folder on your computer (after git clone), with Node 18+:
+
+     PowerShell:
+       $env:DATABASE_URL = "paste-external-url-here"
+       npm install
+       npm run db:init
+
+   That runs database/run-sql.js (same SSL rules as server.js) and applies
+   schema.postgresql.sql then seed.postgres.sql.
+
+3. On your **Web** service, set DATABASE_URL to the **Internal** URL if the web
+   service and database are both on Render (recommended); otherwise External.
+
 If DATABASE_URL is not set, each POST is appended to JSONL files for local
 testing only:
   data/contact.jsonl          (home page contact section)
   data/contact-leads.jsonl    (About Get In Touch)
   data/care-requests.jsonl   (Care Request Form)
 
+If forms return "We could not save your message"
+-------------------------------------------------
+1. Web service must have DATABASE_URL pointing at the database where you ran the
+   SQL files (Render: link Postgres to the service, or paste Internal/External URL).
+2. Run schema + seed (commands above). Log code 42P01 means a table is missing.
+3. TLS: non-localhost URLs use SSL by default. Certificate errors: try env
+   PGSSL_REJECT_UNAUTHORIZED=false only if your host docs recommend it. For local
+   Postgres without TLS, use @localhost in the URL or set DATABASE_SSL=false.
+
+Home page contact form → email (solomon.bagambe1011@gmail.com)
+---------------------------------------------------------------
+After a successful save (Postgres or JSONL), the server can email a copy using
+SMTP. Set these on the **Web** service in Render (Environment):
+
+  SMTP_URL          (recommended) full URL, e.g. SendGrid SMTP:
+                    smtps://apikey:YOUR_SENDGRID_API_KEY@smtp.sendgrid.net:465
+                    Or Gmail (App Password, not your normal password):
+                    smtps://you@gmail.com:16_CHAR_APP_PASSWORD@smtp.gmail.com:465
+
+  Or instead of SMTP_URL:
+    SMTP_HOST, SMTP_PORT (587 or 465), SMTP_USER, SMTP_PASS
+    SMTP_SECURE=true   when using port 465
+
+  EMAIL_FROM        address your provider allows as "From" (often same as SMTP_USER)
+  EMAIL_TO          optional; defaults to solomon.bagambe1011@gmail.com
+
+If SMTP is not set, the form still saves; only the notification email is skipped.
+Check deploy logs: "SMTP email off" vs "SMTP email on".
+
 Notes
 -----
 - Free web services may spin down after idle; the first request can take ~30s.
-- For production you would add email notifications, a real database, spam
-  protection (CAPTCHA), and validation — this setup is for testing end-to-end.
+- Add spam protection (CAPTCHA) for production if you see abuse.

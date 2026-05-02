@@ -7,6 +7,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { Pool } = require("pg");
+const { sendHomePageContactEmail, isMailConfigured } = require("./mail");
 
 const app = express();
 const ROOT = __dirname;
@@ -14,11 +15,43 @@ const DATA = path.join(ROOT, "data");
 
 let pool = null;
 
+function isLocalPostgresUrl(url) {
+  // Avoid parsing the URL (passwords may contain @ or :); match host segment only.
+  return /@localhost(?::|\/|$)/i.test(url) || /@127\.0\.0\.1(?::|\/|$)/i.test(url) || /@\[::1\](?::|\/|$)/i.test(url);
+}
+
+function createPoolConfig(connectionString) {
+  const cfg = {
+    connectionString,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 15000,
+  };
+  const url = connectionString.toLowerCase();
+  const wantsSsl =
+    url.includes("sslmode=require") ||
+    url.includes("sslmode=verify-full") ||
+    url.includes("sslmode=verify-ca") ||
+    process.env.PGSSLMODE === "require";
+  const isLocal = isLocalPostgresUrl(connectionString);
+  // Managed Postgres (Render, Neon, Supabase, RDS, etc.) uses TLS; Node often needs
+  // rejectUnauthorized: false unless you install the provider CA (see PGSSL_REJECT_UNAUTHORIZED).
+  if (!isLocal && (wantsSsl || process.env.DATABASE_SSL !== "false")) {
+    const strict = process.env.PGSSL_REJECT_UNAUTHORIZED === "true";
+    cfg.ssl = strict ? { rejectUnauthorized: true } : { rejectUnauthorized: false };
+  }
+  return cfg;
+}
+
 function getPool() {
-  const url = process.env.DATABASE_URL && String(process.env.DATABASE_URL).trim();
+  let url = process.env.DATABASE_URL && String(process.env.DATABASE_URL).trim();
   if (!url) return null;
+  // Strip accidental wrapping quotes from some dashboards
+  if ((url.startsWith('"') && url.endsWith('"')) || (url.startsWith("'") && url.endsWith("'"))) {
+    url = url.slice(1, -1);
+  }
   if (!pool) {
-    pool = new Pool({ connectionString: url });
+    pool = new Pool(createPoolConfig(url));
   }
   return pool;
 }
@@ -124,6 +157,14 @@ app.post("/api/contact", async (req, res, next) => {
     } else {
       appendJsonl("contact.jsonl", req.body);
     }
+    try {
+      const mailResult = await sendHomePageContactEmail(req.body);
+      if (!mailResult.sent && mailResult.reason) {
+        console.warn("Home contact email:", mailResult.reason);
+      }
+    } catch (mailErr) {
+      console.error("Home contact email failed:", mailErr);
+    }
     res.redirect(303, "/thank-you.html?from=contact");
   } catch (err) {
     next(err);
@@ -177,16 +218,28 @@ app.post("/api/care-request", async (req, res, next) => {
 app.use(express.static(ROOT));
 
 app.use((err, req, res, next) => {
-  console.error(err);
+  const code = err && err.code ? ` [${err.code}]` : "";
+  console.error("Form / database error:%s", code, err);
   if (res.headersSent) {
     next(err);
     return;
   }
-  res.status(503).type("html").send("<p>We could not save your message. Please try again or call us.</p>");
+  const isProd = process.env.NODE_ENV === "production";
+  const safeDetail = isProd
+    ? ""
+    : `<pre style="white-space:pre-wrap;max-width:48rem">${String(err.message || err).replace(
+        /</g,
+        "&lt;"
+      )}</pre><p style="font-size:13px;margin-top:1rem">Check <code>DATABASE_URL</code>, SSL (try <code>PGSSL_REJECT_UNAUTHORIZED=false</code> only if your host requires it), and that you ran <code>database/schema.postgresql.sql</code> plus <code>database/seed.postgres.sql</code>. PostgreSQL code <code>42P01</code> means a table is missing.</p>`;
+  res
+    .status(503)
+    .type("html")
+    .send(`<p>We could not save your message. Please try again or call us.</p>${safeDetail}`);
 });
 
 const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
   const mode = getPool() ? "PostgreSQL" : "JSONL (./data)";
-  console.log(`Listening on http://localhost:${port} — forms: ${mode}`);
+  const mail = isMailConfigured() ? "SMTP email on" : "SMTP email off (home form notifications disabled)";
+  console.log(`Listening on http://localhost:${port} — forms: ${mode}; ${mail}`);
 });

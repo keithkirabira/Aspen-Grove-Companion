@@ -30,6 +30,10 @@ PostgreSQL
   psql "$env:DATABASE_URL" -f schema.postgresql.sql
   psql "$env:DATABASE_URL" -f seed.postgres.sql
 
+Or without psql (from repo root, Node already installed):
+  $env:DATABASE_URL = "postgresql://..."   # External URL from host dashboard
+  npm run db:init
+
 The Node server (server.js) uses DATABASE_URL when set: forms are inserted into
 PostgreSQL; otherwise submissions go to ./data/*.jsonl. The HTML pages only POST
 to the server; they do not connect to the database directly.
