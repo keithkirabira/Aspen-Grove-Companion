@@ -191,6 +191,29 @@
 
       document.title = `Care Request Form - ${current.name}`;
     </script>
+
+    <script>
+      (function () {
+        var form = document.getElementById("careRequestForm");
+        if (!form) return;
+        form.addEventListener("submit", function () {
+          try {
+            var fd = new FormData(form);
+            var o = {};
+            fd.forEach(function (v, k) {
+              o[k] = String(v);
+            });
+            o.ref =
+              "AG-" +
+              Date.now().toString(36).toUpperCase() +
+              "-" +
+              String(Math.floor(Math.random() * 900) + 100).padStart(3, "0");
+            o.savedAt = new Date().toISOString();
+            sessionStorage.setItem("agCareRequestThankYou", JSON.stringify(o));
+          } catch (e) {}
+        });
+      })();
+    </script>
   
     <script>
       function toggleSidebar(open) {

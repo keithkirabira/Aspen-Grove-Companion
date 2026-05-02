@@ -210,6 +210,8 @@ app.post("/api/care-request", async (req, res, next) => {
     qs.set("service", service);
     if (req.body.intro_date) qs.set("date", req.body.intro_date);
     if (req.body.intro_time) qs.set("time", req.body.intro_time);
+    const locPref = str(req.body.location_pref);
+    if (locPref && locPref !== "all") qs.set("location", locPref);
     res.redirect(303, `/thank-you.html?${qs.toString()}`);
   } catch (err) {
     next(err);

@@ -62,9 +62,7 @@
 
       <div id="thankCareRequestPanel">
       <section class="thank-header">
-        <h1>Request received, Customer Name</h1>
-        <p>Thank you. We will call you shortly to discuss care details and confirm your request.</p>
-        <span>Request number: 10000</span>
+        <h1 id="thankHeadline">Request received</h1>
       </section>
 
       <section class="thank-card">
@@ -72,20 +70,17 @@
           <div class="gift-box">🎁</div>
           <div>
             <h2 id="thankServiceName">Service Name</h2>
-            <p>Date and time</p>
-            <p>Duration</p>
-            <p>Location</p>
-            <a href="#">Add to My Google Calendar</a>
+            <p id="thankIntroLine">Date and time</p>
+            <p id="thankDurationLine">Duration</p>
+            <p id="thankLocationLine">Location</p>
+            <a href="#" id="thankCalendarLink" target="_blank" rel="noopener noreferrer">Add to My Google Calendar</a>
           </div>
         </div>
 
-        <div class="total-line">
+        <div class="total-line thank-note-only">
           <div>
             <p>Note</p>
-            <small>Your customer's note will show here.</small>
-          </div>
-          <div class="thank-status-meta">
-            <p class="grand-total">Request status: <strong id="thankTotal">Pending</strong></p>
+            <small id="thankNoteText">Your message will appear here.</small>
           </div>
         </div>
       </section>
@@ -93,9 +88,10 @@
       <section class="thank-addresses">
         <div>
           <h3>Service location</h3>
-          <p>Customer Name</p>
-          <p>Street, City, State Zip Code, Country</p>
-          <p>Phone number</p>
+          <p id="thankCustomerName">—</p>
+          <p id="thankAddressBlock">—</p>
+          <p id="thankPhoneLine">—</p>
+          <p id="thankEmailLine">—</p>
           <p>We will confirm timing by phone.</p>
         </div>
       </section>
@@ -131,14 +127,129 @@
       const sp = new URLSearchParams(window.location.search);
       const isContactForm = sp.get("from") === "contact";
 
+      function dash(v) {
+        const s = v == null ? "" : String(v).trim();
+        return s.length ? s : "—";
+      }
+
+      function countryLabel(code) {
+        if (code === "CA") return "Canada";
+        if (code === "US") return "United States";
+        return dash(code);
+      }
+
+      function areaLabel(loc) {
+        if (!loc || loc === "all") return "Any area";
+        return dash(loc);
+      }
+
+      function readStoredCareRequest() {
+        try {
+          const raw = sessionStorage.getItem("agCareRequestThankYou");
+          if (!raw) return null;
+          return JSON.parse(raw);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function pad2(n) {
+        return String(n).padStart(2, "0");
+      }
+
+      function googleAllDayRange(isoYmd) {
+        const parts = isoYmd.split("-").map(Number);
+        if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return "";
+        const start = new Date(parts[0], parts[1] - 1, parts[2]);
+        const end = new Date(parts[0], parts[1] - 1, parts[2] + 1);
+        const fmt = (d) => d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+        return fmt(start) + "/" + fmt(end);
+      }
+
+      function buildCalendarUrl(serviceName, d, data) {
+        const date = dash(d.intro_date || sp.get("date"));
+        const time = dash(d.intro_time || sp.get("time"));
+        const details = [
+          "Aspen Grove Companion — care request summary",
+          "",
+          "Service: " + serviceName,
+          date !== "—" ? "Intro date: " + date : "",
+          time !== "—" ? "Intro time: " + time : "",
+          data.first_name || data.last_name ? "Contact: " + dash(data.first_name) + " " + dash(data.last_name) : "",
+          data.email ? "Email: " + data.email : "",
+          data.phone ? "Phone: " + data.phone : "",
+          data.ref ? "Reference: " + data.ref : "",
+        ]
+          .filter(Boolean)
+          .join("\n");
+        const base =
+          "https://calendar.google.com/calendar/render?action=TEMPLATE&text=" +
+          encodeURIComponent("Aspen Grove — " + serviceName + " intro") +
+          "&details=" +
+          encodeURIComponent(details);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+          const range = googleAllDayRange(date);
+          if (range) return base + "&dates=" + range;
+        }
+        return base;
+      }
+
       if (isContactForm) {
         document.title = "Thank You - Aspen Grove Care";
       } else {
-        const key = sp.get("service") || "companionship";
+        const data = readStoredCareRequest() || {};
+        const key =
+          (data.service && String(data.service).trim()) || sp.get("service") || "companionship";
         const current = services[key] || services.companionship;
-        document.getElementById("thankServiceName").textContent = current.name;
-        document.getElementById("thankTotal").textContent = "Pending";
-        document.title = `Thank You - ${current.name}`;
+        const serviceName = current.name;
+
+        const first = dash(data.first_name);
+        const last = dash(data.last_name);
+        const fullName = [first, last].filter((x) => x !== "—").join(" ").trim();
+        document.getElementById("thankHeadline").textContent = fullName
+          ? "Request received, " + fullName
+          : "Request received";
+
+        document.getElementById("thankServiceName").textContent = serviceName;
+
+        const introDate = data.intro_date || sp.get("date") || "";
+        const introTime = data.intro_time || sp.get("time") || "";
+        let introText = "—";
+        if (introDate && introTime) introText = introDate + " at " + introTime;
+        else if (introDate) introText = introDate + " (time to be confirmed)";
+        else if (introTime) introText = introTime + " (date to be confirmed)";
+        document.getElementById("thankIntroLine").textContent = introText;
+
+        document.getElementById("thankDurationLine").textContent =
+          "Intro call as scheduled; ongoing visit hours to be confirmed by phone.";
+
+        const locPref = data.location_pref || sp.get("location");
+        document.getElementById("thankLocationLine").textContent =
+          "Preferred area: " + areaLabel(locPref);
+
+        const msg = dash(data.message);
+        document.getElementById("thankNoteText").textContent = msg !== "—" ? msg : "No additional message was provided.";
+
+        document.getElementById("thankCustomerName").textContent = fullName || "—";
+
+        const line1 = dash(data.address_line);
+        const city = dash(data.city);
+        const pc = dash(data.postal_code);
+        const country = countryLabel(data.country_region);
+        const addrParts = [line1, [city, pc].filter((x) => x !== "—").join(" "), country].filter((x) => x && x !== "—");
+        document.getElementById("thankAddressBlock").textContent =
+          addrParts.length ? addrParts.join(", ") : "—";
+
+        const phone = dash(data.phone);
+        document.getElementById("thankPhoneLine").textContent = phone !== "—" ? phone : "—";
+
+        const email = dash(data.email);
+        document.getElementById("thankEmailLine").textContent = email !== "—" ? email : "—";
+
+        const cal = document.getElementById("thankCalendarLink");
+        cal.href = buildCalendarUrl(serviceName, data, data);
+
+        document.title = `Thank You - ${serviceName}`;
       }
     </script>
   

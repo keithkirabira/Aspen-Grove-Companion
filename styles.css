@@ -1192,6 +1192,10 @@ html.thank-msg #thankCareRequestPanel {
   padding-top: 14px;
 }
 
+.thank-note-only {
+  justify-content: flex-start;
+}
+
 .thank-status-meta {
   text-align: right;
 }
