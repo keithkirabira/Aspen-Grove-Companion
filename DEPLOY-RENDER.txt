@@ -75,8 +75,26 @@ If forms return "We could not save your message"
 
 Home page contact form → email (solomon.bagambe1011@gmail.com)
 ---------------------------------------------------------------
-After a successful save (Postgres or JSONL), the server can email a copy using
-SMTP. Set these on the **Web** service in Render (Environment).
+After a successful save (Postgres or JSONL), the server can email a copy.
+
+  **Render FREE web services block outbound SMTP (ports 25, 465, 587).**
+  Gmail / nodemailer / SendGrid-SMTP will **time out (ETIMEDOUT)**. Use **HTTPS**
+  instead (same port 443 as normal web traffic):
+
+  **SendGrid Web API** (no SMTP):
+    SENDGRID_API_KEY=SG....   (app.sendgrid.com → API Keys)
+    EMAIL_FROM=verified-sender@yourdomain.com   (Sender Authentication in SendGrid)
+
+  **Resend** (optional alternative):
+    RESEND_API_KEY=re_...
+    RESEND_FROM=onboarding@resend.dev   (or your verified domain from address)
+
+  EMAIL_TO          optional; defaults to solomon.bagambe1011@gmail.com
+
+  Paid Render instances can use SMTP again if you prefer; order of use in code is:
+  SENDGRID_API_KEY → RESEND_API_KEY → SMTP (SMTP_URL or SMTP_HOST).
+
+--- SMTP (local dev, paid Render, or non-Render hosts) ---
 
   Gmail (same as PHPMailer: host smtp.gmail.com, port 587, TLS, app password):
     SMTP_HOST=smtp.gmail.com
@@ -87,17 +105,15 @@ SMTP. Set these on the **Web** service in Render (Environment).
     EMAIL_FROM=your-email@gmail.com
     (Use a Google "App password", not your normal Gmail password.)
 
-  SendGrid (single URL):
+  SendGrid SMTP URL (blocked on Render Free — use SENDGRID_API_KEY instead):
     SMTP_URL=smtps://apikey:YOUR_SENDGRID_API_KEY@smtp.sendgrid.net:465
     EMAIL_FROM=verified-sender@yourdomain.com
 
-  Other hosts: SMTP_SECURE is tls (587, STARTTLS) or ssl (465). Optional:
+  Other SMTP hosts: SMTP_SECURE is tls (587) or ssl (465). Optional:
     SMTP_REQUIRE_TLS=false   if STARTTLS causes issues on port 587.
 
-  EMAIL_TO          optional; defaults to solomon.bagambe1011@gmail.com
-
-If SMTP is not set, the form still saves; only the notification email is skipped.
-Check deploy logs: "SMTP email off" vs "SMTP email on".
+If no mail env is set, the form still saves; only the notification email is skipped.
+Deploy logs show: "home email: SendGrid API (HTTPS)" / "Resend..." / "SMTP" / "off...".
 
 Notes
 -----

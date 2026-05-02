@@ -15,8 +15,16 @@ services:
       # Set in the Render dashboard (Postgres add-on connection string, Neon, Supabase, etc.)
       - key: DATABASE_URL
         sync: false
-      # Optional: home contact form copies to EMAIL_TO (see DEPLOY-RENDER.txt). Example: SendGrid SMTP_URL.
-      - key: SMTP_URL
+      # Render Free blocks SMTP; use SENDGRID_API_KEY + EMAIL_FROM (HTTPS). See DEPLOY-RENDER.txt.
+      - key: SENDGRID_API_KEY
         sync: false
       - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_TO
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: SMTP_URL
         sync: false

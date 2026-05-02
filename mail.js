@@ -1,19 +1,42 @@
 /**
- * Outbound email for form notifications (nodemailer + SMTP).
+ * Outbound email for home-page contact notifications.
  *
- * Gmail-style (same idea as PHPMailer: isSMTP, smtp.gmail.com, 587, TLS):
- *   SMTP_HOST=smtp.gmail.com
- *   SMTP_PORT=587
- *   SMTP_SECURE=tls
- *   SMTP_USER=your-email@gmail.com
- *   SMTP_PASS=your-google-app-password
- *   EMAIL_FROM=your-email@gmail.com
+ * Render FREE web services block outbound SMTP (ports 25, 465, 587) — Gmail/SMTP
+ * will time out (ETIMEDOUT). Use HTTPS instead:
  *
- * Or set SMTP_URL (e.g. SendGrid) instead of the discrete vars above.
+ *   SENDGRID_API_KEY  → SendGrid Web API (port 443). Create at app.sendgrid.com
+ *   EMAIL_FROM        → verified sender in SendGrid
+ *
+ * Or:
+ *   RESEND_API_KEY + RESEND_FROM (or EMAIL_FROM) → https://resend.com
+ *
+ * SMTP (nodemailer) still works on paid hosts / local dev / providers that allow SMTP.
  */
 const nodemailer = require("nodemailer");
 
 const DEFAULT_NOTIFY_TO = "solomon.bagambe1011@gmail.com";
+const SUBJECT = "Aspen Grove — New home page contact";
+
+function buildMessage(body) {
+  const name = String(body.full_name || "").trim() || "(no name)";
+  const email = String(body.email || "").trim() || "(none)";
+  const phone = String(body.phone || "").trim() || "(none)";
+  const message = String(body.message || "").trim() || "(empty)";
+  const text = [
+    "New message from the Aspen Grove home page contact form.",
+    "",
+    `Full name: ${name}`,
+    `Email: ${email}`,
+    `Phone: ${phone}`,
+    "",
+    "Message:",
+    message,
+    "",
+    `Submitted at (server): ${new Date().toISOString()}`,
+  ].join("\n");
+  const replyTo = email !== "(none)" ? email : null;
+  return { text, replyTo };
+}
 
 function buildHostTransportOptions() {
   const host = process.env.SMTP_HOST?.trim();
@@ -21,8 +44,6 @@ function buildHostTransportOptions() {
   const explicit = process.env.SMTP_SECURE?.trim();
   const mode = (explicit || (port === 465 ? "ssl" : "tls")).toLowerCase();
 
-  // PHPMailer: SMTPSecure = 'ssl' / port 465  →  nodemailer secure: true
-  // PHPMailer: SMTPSecure = 'tls' / port 587  →  nodemailer secure: false + STARTTLS
   let secure = false;
   let requireTLS = false;
   if (mode === "ssl" || mode === "smtps" || mode === "true" || mode === "1") {
@@ -65,14 +86,88 @@ function getTransport() {
 }
 
 function isMailConfigured() {
-  return Boolean(process.env.SMTP_URL?.trim() || process.env.SMTP_HOST?.trim());
+  return Boolean(
+    process.env.SENDGRID_API_KEY?.trim() ||
+      process.env.RESEND_API_KEY?.trim() ||
+      process.env.SMTP_URL?.trim() ||
+      process.env.SMTP_HOST?.trim()
+  );
 }
 
-/**
- * Sends a plain-text summary of the home page contact form.
- * Does not throw if SMTP is not configured (logs once-style skip).
- */
-async function sendHomePageContactEmail(body) {
+async function sendViaSendGridApi({ text, replyTo }) {
+  const key = process.env.SENDGRID_API_KEY?.trim();
+  if (!key) return null;
+
+  const to = process.env.EMAIL_TO?.trim() || DEFAULT_NOTIFY_TO;
+  const from = process.env.EMAIL_FROM?.trim();
+  if (!from) {
+    return { sent: false, reason: "EMAIL_FROM required for SendGrid API" };
+  }
+
+  const payload = {
+    personalizations: [{ to: [{ email: to }] }],
+    from: { email: from },
+    subject: SUBJECT,
+    content: [{ type: "text/plain", value: text }],
+  };
+  if (replyTo) {
+    payload.reply_to = { email: replyTo };
+  }
+
+  const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text();
+    throw new Error(`SendGrid API ${res.status}: ${errBody.slice(0, 400)}`);
+  }
+  return { sent: true };
+}
+
+async function sendViaResendApi({ text, replyTo }) {
+  const key = process.env.RESEND_API_KEY?.trim();
+  if (!key) return null;
+
+  const to = process.env.EMAIL_TO?.trim() || DEFAULT_NOTIFY_TO;
+  const from = process.env.RESEND_FROM?.trim() || process.env.EMAIL_FROM?.trim();
+  if (!from) {
+    return { sent: false, reason: "RESEND_FROM or EMAIL_FROM required for Resend" };
+  }
+
+  const payload = {
+    from,
+    to: [to],
+    subject: SUBJECT,
+    text,
+  };
+  if (replyTo) {
+    payload.reply_to = replyTo;
+  }
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg = data.message || JSON.stringify(data).slice(0, 400);
+    throw new Error(`Resend API ${res.status}: ${msg}`);
+  }
+  return { sent: true };
+}
+
+async function sendViaSmtp({ text, replyTo }) {
   const transport = getTransport();
   if (!transport) {
     return { sent: false, reason: "SMTP not configured (set SMTP_URL or SMTP_HOST)" };
@@ -83,32 +178,37 @@ async function sendHomePageContactEmail(body) {
     return { sent: false, reason: "Set EMAIL_FROM or SMTP_USER for the From address" };
   }
 
-  const name = String(body.full_name || "").trim() || "(no name)";
-  const email = String(body.email || "").trim() || "(none)";
-  const phone = String(body.phone || "").trim() || "(none)";
-  const message = String(body.message || "").trim() || "(empty)";
-  const text = [
-    "New message from the Aspen Grove home page contact form.",
-    "",
-    `Full name: ${name}`,
-    `Email: ${email}`,
-    `Phone: ${phone}`,
-    "",
-    "Message:",
-    message,
-    "",
-    `Submitted at (server): ${new Date().toISOString()}`,
-  ].join("\n");
-
-  const replyTo = email !== "(none)" ? email : undefined;
   await transport.sendMail({
     from,
     to,
-    replyTo,
-    subject: "Aspen Grove — New home page contact",
+    replyTo: replyTo || undefined,
+    subject: SUBJECT,
     text,
   });
   return { sent: true };
 }
 
-module.exports = { sendHomePageContactEmail, isMailConfigured };
+/**
+ * Prefers HTTPS APIs (works on Render Free). Falls back to SMTP.
+ */
+async function sendHomePageContactEmail(body) {
+  const msg = buildMessage(body);
+
+  if (process.env.SENDGRID_API_KEY?.trim()) {
+    return sendViaSendGridApi(msg);
+  }
+  if (process.env.RESEND_API_KEY?.trim()) {
+    return sendViaResendApi(msg);
+  }
+  return sendViaSmtp(msg);
+}
+
+/** Human-readable mode for startup logs */
+function getMailModeLabel() {
+  if (process.env.SENDGRID_API_KEY?.trim()) return "SendGrid API (HTTPS)";
+  if (process.env.RESEND_API_KEY?.trim()) return "Resend API (HTTPS)";
+  if (isMailConfigured()) return "SMTP";
+  return "off (no SENDGRID_API_KEY, RESEND_API_KEY, or SMTP)";
+}
+
+module.exports = { sendHomePageContactEmail, isMailConfigured, getMailModeLabel };

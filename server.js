@@ -7,7 +7,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const { Pool } = require("pg");
-const { sendHomePageContactEmail, isMailConfigured } = require("./mail");
+const { sendHomePageContactEmail, getMailModeLabel } = require("./mail");
 
 const app = express();
 const ROOT = __dirname;
@@ -240,6 +240,5 @@ app.use((err, req, res, next) => {
 const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
   const mode = getPool() ? "PostgreSQL" : "JSONL (./data)";
-  const mail = isMailConfigured() ? "SMTP email on" : "SMTP email off (home form notifications disabled)";
-  console.log(`Listening on http://localhost:${port} — forms: ${mode}; ${mail}`);
+  console.log(`Listening on http://localhost:${port} — forms: ${mode}; home email: ${getMailModeLabel()}`);
 });
