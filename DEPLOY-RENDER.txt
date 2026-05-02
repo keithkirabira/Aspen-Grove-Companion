@@ -1,0 +1,47 @@
+Deploy on Render (forms + static pages)
+========================================
+
+This site is mostly static HTML/CSS, but forms POST to a small Node server
+(server.js) that saves submissions under ./data as JSON lines (for testing).
+Render should use a Web Service (this repo includes render.yaml), not a
+Static Site only.
+
+Prerequisite: Git repository on GitHub, GitLab, or Bitbucket.
+
+Steps (dashboard)
+-----------------
+1. Push this project to your host (include package.json, server.js, render.yaml).
+2. https://dashboard.render.com → New → Web Service (or Blueprint if you prefer).
+3. Connect the repo. Render will suggest settings from render.yaml if you use Blueprint.
+4. If creating Web Service manually:
+   - Runtime: Node
+   - Build command:  npm install
+   - Start command:  npm start
+   - Instance type: Free (or paid if you prefer always-on).
+5. Deploy. Open the .onrender.com URL.
+
+Local testing
+-------------
+  cd this folder
+  npm install
+  npm start
+  Open http://localhost:3000
+
+Do not open index.html as a file:// URL; form posts need http://localhost
+or your Render URL.
+
+Where submissions go
+--------------------
+On the server, each POST is appended to:
+  data/contact.jsonl          (home page contact section)
+  data/contact-leads.jsonl  (About Get In Touch)
+  data/care-requests.jsonl  (Care Request Form)
+
+Download these from Render Shell or add a database later; the SQL files in
+database/ are optional and are not wired to this server yet.
+
+Notes
+-----
+- Free web services may spin down after idle; the first request can take ~30s.
+- For production you would add email notifications, a real database, spam
+  protection (CAPTCHA), and validation — this setup is for testing end-to-end.

@@ -1,0 +1,14 @@
+{
+  "name": "aspen-grove-companion-site",
+  "private": true,
+  "description": "Static site + minimal form handlers for Render (or local testing)",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

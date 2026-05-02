@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aspen Grove Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <button class="menu-btn" aria-label="Open navigation" onclick="toggleSidebar(true)">&#9776;</button>
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="booking.html">Service Page</a>
+          <a href="about.html">About Us</a>
+          <a href="faq.html">FAQ</a>
+        </nav>
+      </div>
+    </header>
+    <div class="side-overlay" id="sideOverlay" onclick="toggleSidebar(false)"></div>
+    <aside class="side-nav" id="sideNav" aria-label="Sidebar navigation">
+      <button class="side-close" aria-label="Close navigation" onclick="toggleSidebar(false)">X</button>
+      <a href="index.html">Home</a>
+      <a href="booking.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="schedule.html">Book Free 15-Min Intro Call</a>
+      <a href="manage-bookings.html">Manage Bookings</a>
+    </aside>
+
+    <main>
+      <section class="hero container">
+        <div class="hero-copy">
+          <h1>
+            Trusted Companion and Respite Care for Seniors, People with
+            Disabilities, and Other Vulnerable Adults
+          </h1>
+          <p>
+            Aspen Grove Companion Services provides non-medical support that
+            helps seniors and adults with disabilities live safely at home. We
+            focus on dignity, consistency, and genuine companionship.
+          </p>
+          <a class="inline-link" href="schedule.html">Book Free 15-Min Intro Call</a>
+        </div>
+        <div class="hero-image">
+          <img
+            src="assets/hero-1.png"
+            alt="Caregiver with senior on sofa"
+            id="homeHeroRotatingImage"
+          />
+        </div>
+      </section>
+
+      <section class="mission container">
+        <h2>Our Mission</h2>
+        <p>
+          Our mission is to enhance quality of life through personalized in-home care, fostering independence,
+          dignity, and meaningful connection for individuals and their families.
+        </p>
+        <a href="about.html" class="btn-outline">Learn More</a>
+      </section>
+
+      <section class="services container">
+        <h2>Our Services</h2>
+        <div class="services-carousel" id="servicesCarousel">
+          <div class="services-track services-track--marquee" id="servicesTrack">
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?auto=format&fit=crop&w=800&q=80"
+              alt="Personal care essentials"
+            />
+            <div class="card-body">
+              <h3>Personal Care</h3>
+              <p>Personalized care at home</p>
+              <a href="service.html?service=personal" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1511044568932-338cba0ad803?auto=format&fit=crop&w=800&q=80"
+              alt="Companionship"
+            />
+            <div class="card-body">
+              <h3>Companionship / Home Support</h3>
+              <p>Companionship, meal prep, and light housekeeping support</p>
+              <a href="service.html?service=companionship" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80"
+              alt="Medication reminders"
+            />
+            <div class="card-body">
+              <h3>Medication Reminders</h3>
+              <p>Timely prompts so doses are not missed</p>
+              <a href="service.html?service=medication-reminders" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"
+              alt="Post-hospital support at home"
+            />
+            <div class="card-body">
+              <h3>Post-Hospital Transition Support</h3>
+              <p>Safe routines and support after discharge</p>
+              <a href="service.html?service=post-hospital" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80"
+              alt="Escorted transportation to appointments"
+            />
+            <div class="card-body">
+              <h3>Escorted Transportation (Appointments)</h3>
+              <p>Safe rides and support at medical visits</p>
+              <a href="service.html?service=escorted-transportation" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80"
+              alt="Grocery shopping and errands"
+            />
+            <div class="card-body">
+              <h3>Grocery Shopping &amp; Errands</h3>
+              <p>With you or for you—groceries and essentials</p>
+              <a href="service.html?service=grocery-errands" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80"
+              alt="Nutritious meal preparation"
+            />
+            <div class="card-body">
+              <h3>Nutritious Meal Preparation</h3>
+              <p>Meals tailored to dietary restrictions and cleanup</p>
+              <a href="service.html?service=nutritious-meals" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1581579438747-104c53d4b79d?auto=format&fit=crop&w=800&q=80"
+              alt="Disability support at home"
+            />
+            <div class="card-body">
+              <h3>Disability Support &amp; Care</h3>
+              <p>Dignified daily routines and personal support</p>
+              <a href="service.html?service=disability-support" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=800&q=80"
+              alt="Social engagement and meaningful conversation"
+            />
+            <div class="card-body">
+              <h3>Social Engagement (Talks)</h3>
+              <p>Conversation and activities that reduce isolation</p>
+              <a href="service.html?service=social-engagement" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          </div>
+        </div>
+        <p class="services-see-all">
+          <a href="booking.html" class="inline-link">See full service list</a>
+        </p>
+      </section>
+
+      <section class="trust-proof container">
+        <h2>Safety & Trust Standards</h2>
+        <div class="trust-grid">
+          <article>
+            <h3>Vulnerable Sector Checks</h3>
+            <p>All caregivers complete criminal record and vulnerable sector screening.</p>
+          </article>
+          <article>
+            <h3>Licensed, Insured & Bonded</h3>
+            <p>Our team is fully covered for in-home caregiving services across our service area.</p>
+          </article>
+          <article>
+            <h3>Caregiver Screening</h3>
+            <p>We verify references, training, and in-home safety practices before placement.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="service-areas container">
+        <h2>Service Areas</h2>
+        <p>We currently serve families in Edmonton, Leduc, and St. Albert.</p>
+        <p>Not sure if we cover your area? We will confirm within 15 minutes.</p>
+        <div class="service-areas-cta">
+          <a href="about.html#contact-form" class="btn-outline">Get in Touch</a>
+        </div>
+      </section>
+
+      <section class="standards container">
+        <div class="standards-left">
+          <h2>The Standard of Care</h2>
+        </div>
+        <div class="standards-list">
+          <div class="standard-item">
+            <span class="number">01</span>
+            <h3>Compassionate Presence</h3>
+            <p>
+              We prioritize emotional support and active listening to ensure
+              every senior feels seen and valued.
+            </p>
+          </div>
+          <div class="standard-item">
+            <span class="number">02</span>
+            <h3>Professional Expertise</h3>
+            <p>
+              Our caregivers are rigorously vetted and trained in specialized
+              elder support and safety protocols.
+            </p>
+          </div>
+          <div class="standard-item">
+            <span class="number">03</span>
+            <h3>Respectful Independence</h3>
+            <p>
+              We empower seniors to maintain their daily routines while
+              providing the necessary support to thrive.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact container">
+        <div class="contact-copy">
+          <h2>Get in Touch</h2>
+          <p>
+            We are here to provide the compassionate support you need. Reach out
+            to schedule a consultation or learn more about our in-home care
+            services.
+          </p>
+          <p>Email: solomon.bagambe1011@gmail.com</p>
+          <p>Phone: +1 (236) 878-3722</p>
+          <p>Response time: Usually within 15 minutes during working hours.</p>
+          <a href="https://wa.me/12368783722" class="btn-solid whatsapp-btn">Chat on WhatsApp</a>
+        </div>
+
+        <form class="contact-form" method="post" action="/api/contact">
+          <label for="name">Full Name</label>
+          <input id="name" name="full_name" type="text" required autocomplete="name" />
+
+          <div class="row">
+            <div>
+              <label for="email">Email Address</label>
+              <input id="email" name="email" type="email" required autocomplete="email" />
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" />
+            </div>
+          </div>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required></textarea>
+          <button type="submit" class="btn-send">Send Message</button>
+        </form>
+      </section>
+
+      <section class="image-section container">
+        <img
+          src="https://images.unsplash.com/photo-1516302752625-fcc3c50ae61f?auto=format&fit=crop&w=1600&q=80"
+          alt="Nurse and senior in wheelchair"
+        />
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <a href="tel:+12368783722" class="footer-contact-link">Phone: +1 (236) 878-3722</a>
+        <a href="mailto:solomon.bagambe1011@gmail.com" class="footer-contact-link">Email: solomon.bagambe1011@gmail.com</a>
+        <a href='about.html#contact-form' class='footer-contact-link'>Get in Touch</a>
+      </div>
+    </footer>
+  
+    <script>
+      function initHeroImageRotation() {
+        const image = document.getElementById("homeHeroRotatingImage");
+        if (!image) return;
+
+        const imagePool = ["assets/hero-1.png", "assets/hero-2.png", "assets/hero-3.png", "assets/hero-4.png", "assets/hero-5.png"];
+
+        const shuffle = (list) => {
+          const arr = [...list];
+          for (let i = arr.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          return arr;
+        };
+
+        let queue = shuffle(imagePool);
+
+        const nextImage = (currentSrc) => {
+          if (!queue.length) queue = shuffle(imagePool);
+          let candidate = queue.pop();
+
+          if (candidate === currentSrc && imagePool.length > 1) {
+            if (!queue.length) queue = shuffle(imagePool);
+            candidate = queue.pop();
+          }
+
+          return candidate;
+        };
+
+        image.setAttribute("src", nextImage(image.getAttribute("src")));
+
+        setInterval(() => {
+          const current = image.getAttribute("src");
+          image.setAttribute("src", nextImage(current));
+        }, 2400);
+      }
+
+      initHeroImageRotation();
+    </script>
+
+    <script>
+      function initServicesMarquee() {
+        const track = document.getElementById("servicesTrack");
+        const carousel = document.getElementById("servicesCarousel");
+        if (!track || !carousel) return;
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return;
+        }
+
+        const originalCards = Array.from(track.children);
+        if (originalCards.length < 2) return;
+
+        originalCards.forEach((card) => {
+          const clone = card.cloneNode(true);
+          clone.setAttribute("aria-hidden", "true");
+          track.appendChild(clone);
+        });
+
+        carousel.classList.add("services-marquee");
+
+        const syncSpeed = () => {
+          const halfWidth = track.scrollWidth / 2;
+          if (!halfWidth) return;
+          const pxPerSecond = 32;
+          const seconds = Math.max(36, Math.min(140, halfWidth / pxPerSecond));
+          track.style.animationDuration = `${seconds}s`;
+        };
+
+        syncSpeed();
+        window.addEventListener("resize", syncSpeed);
+        window.addEventListener("load", syncSpeed, { once: true });
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => initServicesMarquee());
+      });
+
+    </script>
+
+    <script>
+      function toggleSidebar(open) {
+        const nav = document.getElementById("sideNav");
+        const overlay = document.getElementById("sideOverlay");
+        if (!nav || !overlay) return;
+        nav.classList.toggle("open", open);
+        overlay.classList.toggle("show", open);
+      }
+    </script>  </body>
+</html>

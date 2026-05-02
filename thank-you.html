@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thank You - Aspen Grove Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <button class="menu-btn" aria-label="Open navigation" onclick="toggleSidebar(true)">&#9776;</button>
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="booking.html">Service Page</a>
+          <a href="about.html">About Us</a>
+          <a href="faq.html">FAQ</a>
+        </nav>
+      </div>
+    </header>
+    <div class="side-overlay" id="sideOverlay" onclick="toggleSidebar(false)"></div>
+    <aside class="side-nav" id="sideNav" aria-label="Sidebar navigation">
+      <button class="side-close" aria-label="Close navigation" onclick="toggleSidebar(false)">X</button>
+      <a href="index.html">Home</a>
+      <a href="booking.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="schedule.html">Book Free 15-Min Intro Call</a>
+      <a href="manage-bookings.html">Manage Bookings</a>
+    </aside>
+
+    <main class="container thank-main">
+      <section class="thank-header">
+        <h1>Request received, Customer Name</h1>
+        <p>Thank you. We will call you shortly to discuss care details and confirm your request.</p>
+        <span>Request number: 10000</span>
+      </section>
+
+      <section class="thank-card">
+        <div class="service-line">
+          <div class="gift-box">🎁</div>
+          <div>
+            <h2 id="thankServiceName">Service Name</h2>
+            <p>Date and time</p>
+            <p>Duration</p>
+            <p>Location</p>
+            <a href="#">Add to My Google Calendar</a>
+          </div>
+        </div>
+
+        <div class="total-line">
+          <div>
+            <p>Note</p>
+            <small>Your customer's note will show here.</small>
+          </div>
+          <div class="thank-status-meta">
+            <p class="grand-total">Request status: <strong id="thankTotal">Pending</strong></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="thank-addresses">
+        <div>
+          <h3>Service location</h3>
+          <p>Customer Name</p>
+          <p>Street, City, State Zip Code, Country</p>
+          <p>Phone number</p>
+          <p>We will confirm timing by phone.</p>
+        </div>
+      </section>
+
+      <a href="booking.html" class="continue-browse">Continue Browsing</a>
+    </main>
+
+    <footer class="site-footer booking-footer">
+      <div class="container footer-grid">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <a href="tel:+12368783722" class="footer-contact-link">Phone: +1 (236) 878-3722</a>
+        <a href="mailto:solomon.bagambe1011@gmail.com" class="footer-contact-link">Email: solomon.bagambe1011@gmail.com</a>
+        <a href='about.html#contact-form' class='footer-contact-link'>Get in Touch</a>
+      </div>
+    </footer>
+
+    <script>
+      const services = {
+        companionship: { name: "Companionship" },
+        personal: { name: "Personal Care" },
+        "medication-reminders": { name: "Medication Reminders" },
+        "post-hospital": { name: "Post-Hospital Transition Support" },
+        "escorted-transportation": { name: "Escorted Transportation (Appointments)" },
+        "grocery-errands": { name: "Grocery Shopping & Errands" },
+        "nutritious-meals": { name: "Nutritious Meal Preparation" },
+        "disability-support": { name: "Disability Support & Care" },
+        "social-engagement": { name: "Social Engagement (Talks)" }
+      };
+
+      const key = new URLSearchParams(window.location.search).get("service") || "companionship";
+      const current = services[key] || services.companionship;
+      document.getElementById("thankServiceName").textContent = current.name;
+      document.getElementById("thankTotal").textContent = "Pending";
+      document.title = `Thank You - ${current.name}`;
+    </script>
+  
+    <script>
+      function toggleSidebar(open) {
+        const nav = document.getElementById("sideNav");
+        const overlay = document.getElementById("sideOverlay");
+        if (!nav || !overlay) return;
+        nav.classList.toggle("open", open);
+        overlay.classList.toggle("show", open);
+      }
+    </script>  </body>
+</html>

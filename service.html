@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Service Detail - Aspen Grove Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <button class="menu-btn" aria-label="Open navigation" onclick="toggleSidebar(true)">&#9776;</button>
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="booking.html">Service Page</a>
+          <a href="about.html">About Us</a>
+          <a href="faq.html">FAQ</a>
+        </nav>
+      </div>
+    </header>
+    <div class="side-overlay" id="sideOverlay" onclick="toggleSidebar(false)"></div>
+    <aside class="side-nav" id="sideNav" aria-label="Sidebar navigation">
+      <button class="side-close" aria-label="Close navigation" onclick="toggleSidebar(false)">X</button>
+      <a href="index.html">Home</a>
+      <a href="booking.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="schedule.html">Book Free 15-Min Intro Call</a>
+      <a href="manage-bookings.html">Manage Bookings</a>
+    </aside>
+
+    <main class="service-main container">
+      <div class="service-topbar">
+        <div class="service-top-left">
+          <span class="drag-dots">⋮⋮</span>
+          <span id="serviceTopName">Companionship</span>
+        </div>
+        <div class="service-count">Services</div>
+        <a href="booking.html" class="service-manage">Manage Services</a>
+      </div>
+
+      <section class="service-panel">
+        <div class="breadcrumb">
+          <a href="index.html">Home</a>
+          <span>&gt;</span>
+          <a href="booking.html">Service list</a>
+          <span>&gt;</span>
+          <span id="serviceCrumb">Companionship</span>
+        </div>
+
+        <h1 id="serviceName">Companionship</h1>
+        <p class="service-subtitle" id="serviceSubtitle">Emotional and social support</p>
+
+        <a href="schedule.html" id="serviceBookLink" class="btn-solid service-book-btn">Request a Care Quote</a>
+
+        <div class="service-description">
+          <h2>Service Description</h2>
+          <p id="serviceDescription">
+            Our companionship service offers emotional support and social
+            interaction, helping individuals stay socially engaged and
+            emotionally fulfilled, while feeling respected and supported at
+            home.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer booking-footer">
+      <div class="container footer-grid">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <a href="tel:+12368783722" class="footer-contact-link">Phone: +1 (236) 878-3722</a>
+        <a href="mailto:solomon.bagambe1011@gmail.com" class="footer-contact-link">Email: solomon.bagambe1011@gmail.com</a>
+        <a href='about.html#contact-form' class='footer-contact-link'>Get in Touch</a>
+      </div>
+    </footer>
+
+    <script>
+      const services = {
+        companionship: {
+          name: "Companionship",
+          subtitle: "Emotional and social support",
+          description:
+            "Our companionship service offers emotional support and social interaction, helping individuals stay socially engaged and emotionally fulfilled, while feeling respected and supported at home."
+        },
+        personal: {
+          name: "Personal Care",
+          subtitle: "Personalized care at home",
+          description:
+            "Our personal care service assists with day-to-day routines while preserving dignity, comfort, and independence in the home environment."
+        },
+        "medication-reminders": {
+          name: "Medication Reminders",
+          subtitle: "Timely prompts, not medical administration",
+          description:
+            "Our caregivers provide friendly medication reminders so doses are taken on schedule. We do not administer or prescribe medication; for nursing-level administration, we can discuss referrals or coordinated care."
+        },
+        "post-hospital": {
+          name: "Post-Hospital Transition Support",
+          subtitle: "Settling in safely after discharge",
+          description:
+            "We help in the first days and weeks after a hospital stay with routine, companionship, light household support, and safety-minded presence so recovery at home feels manageable for clients and families."
+        },
+        "escorted-transportation": {
+          name: "Escorted Transportation (Appointments)",
+          subtitle: "Safe rides, escorts home, and clarity after visits",
+          description:
+            "Getting to the doctor or the pharmacy shouldn't be a struggle. We provide safe, reliable transportation and can stay with the client during medical appointments to ensure they get home safely. Your caregiver can also act as a second set of ears during the visit—helping remember instructions, follow-up dates, and next steps—while respecting privacy and clinic policies."
+        },
+        "grocery-errands": {
+          name: "Grocery Shopping & Errands",
+          subtitle: "Groceries, prescriptions, and essentials handled with care",
+          description:
+            "We handle the heavy lifting. Our caregivers can shop for groceries, pick up prescriptions, and run essential errands so the pantry stays stocked with fresh, healthy food. We can shop with the client for companionship and choice, or shop on their behalf when that works best for your family."
+        },
+        "nutritious-meals": {
+          name: "Nutritious Meal Preparation",
+          subtitle: "Dietary restrictions respected, from prep to cleanup",
+          description:
+            "Eating well is the foundation of health. We prepare delicious, home-cooked meals tailored to dietary restrictions and preferences—such as low-sodium, diabetic-friendly, gluten-free, and other health-conscious plans common in Canadian homes—and handle kitchen cleanup so every meal feels manageable and dignified."
+        },
+        "disability-support": {
+          name: "Disability Support & Care",
+          subtitle: "Independence and dignity in daily routines",
+          description:
+            "Specialized assistance for individuals living with physical or cognitive disabilities. We focus on empowering independence by helping with daily routines, mobility, and personal care in a respectful way—with dignity at the centre of every interaction."
+        },
+        "social-engagement": {
+          name: "Social Engagement (Talks)",
+          subtitle: "Conversation, stimulation, and connection at home",
+          description:
+            "Loneliness can affect health. Our caregivers provide meaningful conversation, mental stimulation, and emotional support—whether sharing stories, playing cards, or going for a walk—so your loved one feels engaged and uplifted. This kind of regular companionship helps prevent social isolation, a concern many Canadian families watch for, by keeping routines warm, familiar, and socially connected."
+        }
+      };
+
+      const selected = new URLSearchParams(window.location.search).get("service");
+      const currentService = services[selected] || services.companionship;
+      const serviceKey = selected && services[selected] ? selected : "companionship";
+
+      document.getElementById("serviceTopName").textContent = currentService.name;
+      document.getElementById("serviceCrumb").textContent = currentService.name;
+      document.getElementById("serviceName").textContent = currentService.name;
+      document.getElementById("serviceSubtitle").textContent = currentService.subtitle;
+      document.getElementById("serviceDescription").textContent = currentService.description;
+      document.getElementById("serviceBookLink").href = `schedule.html?service=${serviceKey}`;
+      document.title = `${currentService.name} - Aspen Grove Care`;
+    </script>
+  
+    <script>
+      function toggleSidebar(open) {
+        const nav = document.getElementById("sideNav");
+        const overlay = document.getElementById("sideOverlay");
+        if (!nav || !overlay) return;
+        nav.classList.toggle("open", open);
+        overlay.classList.toggle("show", open);
+      }
+    </script>  </body>
+</html>

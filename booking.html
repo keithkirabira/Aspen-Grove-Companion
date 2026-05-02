@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Services - Aspen Grove Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <button class="menu-btn" aria-label="Open navigation" onclick="toggleSidebar(true)">&#9776;</button>
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="booking.html">Service Page</a>
+          <a href="about.html">About Us</a>
+          <a href="faq.html">FAQ</a>
+        </nav>
+      </div>
+    </header>
+    <div class="side-overlay" id="sideOverlay" onclick="toggleSidebar(false)"></div>
+    <aside class="side-nav" id="sideNav" aria-label="Sidebar navigation">
+      <button class="side-close" aria-label="Close navigation" onclick="toggleSidebar(false)">X</button>
+      <a href="index.html">Home</a>
+      <a href="booking.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="schedule.html">Book Free 15-Min Intro Call</a>
+      <a href="manage-bookings.html">Manage Bookings</a>
+    </aside>
+
+    <main class="booking-main container">
+      <section class="booking-content">
+          <div class="breadcrumb">
+            <a href="index.html">Home</a>
+            <span>&gt;</span>
+            <span>Services</span>
+          </div>
+
+          <section class="booking-services">
+            <h1>Request Care Quote</h1>
+            <p class="booking-intro">Choose a service category to request a free assessment call.</p>
+            <div class="card-grid booking-grid booking-services-grid">
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?auto=format&fit=crop&w=800&q=80"
+                  alt="Personal care"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=personal">Personal Care</a></h2>
+                  <a href="service.html?service=personal" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1511044568932-338cba0ad803?auto=format&fit=crop&w=800&q=80"
+                  alt="Companionship"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=companionship">Companionship / Home Support</a></h2>
+                  <a href="service.html?service=companionship" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&w=800&q=80"
+                  alt="Medication reminders"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=medication-reminders">Medication Reminders</a></h2>
+                  <a href="service.html?service=medication-reminders" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80"
+                  alt="Recovery at home after hospital"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=post-hospital">Post-Hospital Transition Support</a></h2>
+                  <a href="service.html?service=post-hospital" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80"
+                  alt="Transportation to appointments"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=escorted-transportation">Escorted Transportation (Appointments)</a></h2>
+                  <a href="service.html?service=escorted-transportation" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80"
+                  alt="Grocery shopping"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=grocery-errands">Grocery Shopping &amp; Errands</a></h2>
+                  <a href="service.html?service=grocery-errands" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80"
+                  alt="Meal preparation in home kitchen"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=nutritious-meals">Nutritious Meal Preparation</a></h2>
+                  <a href="service.html?service=nutritious-meals" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1581579438747-104c53d4b79d?auto=format&fit=crop&w=800&q=80"
+                  alt="Disability support and companionship"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=disability-support">Disability Support &amp; Care</a></h2>
+                  <a href="service.html?service=disability-support" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+              <article class="service-card">
+                <img
+                  src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=800&q=80"
+                  alt="Social engagement and conversation"
+                />
+                <div class="card-body booking-card-body">
+                  <h2><a href="service.html?service=social-engagement">Social Engagement (Talks)</a></h2>
+                  <a href="service.html?service=social-engagement" class="btn-solid">Request a Care Quote</a>
+                </div>
+              </article>
+
+            </div>
+          </section>
+      </section>
+    </main>
+
+    <footer class="site-footer booking-footer">
+      <div class="container footer-grid">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <a href="tel:+12368783722" class="footer-contact-link">Phone: +1 (236) 878-3722</a>
+        <a href="mailto:solomon.bagambe1011@gmail.com" class="footer-contact-link">Email: solomon.bagambe1011@gmail.com</a>
+        <a href='about.html#contact-form' class='footer-contact-link'>Get in Touch</a>
+      </div>
+    </footer>
+  
+    <script>
+      function toggleSidebar(open) {
+        const nav = document.getElementById("sideNav");
+        const overlay = document.getElementById("sideOverlay");
+        if (!nav || !overlay) return;
+        nav.classList.toggle("open", open);
+        overlay.classList.toggle("show", open);
+      }
+    </script>  </body>
+</html>

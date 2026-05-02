@@ -1,0 +1,14 @@
+# Web service: serves HTML/CSS/JS and handles form POSTs (see server.js).
+# Free instances may sleep after idle; first request can be slow.
+
+services:
+  - type: web
+    name: aspen-grove-companion
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"

@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Care Request Form - Aspen Grove Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <button class="menu-btn" aria-label="Open navigation" onclick="toggleSidebar(true)">&#9776;</button>
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="booking.html">Service Page</a>
+          <a href="about.html">About Us</a>
+          <a href="faq.html">FAQ</a>
+        </nav>
+      </div>
+    </header>
+    <div class="side-overlay" id="sideOverlay" onclick="toggleSidebar(false)"></div>
+    <aside class="side-nav" id="sideNav" aria-label="Sidebar navigation">
+      <button class="side-close" aria-label="Close navigation" onclick="toggleSidebar(false)">X</button>
+      <a href="index.html">Home</a>
+      <a href="booking.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="schedule.html">Book Free 15-Min Intro Call</a>
+      <a href="manage-bookings.html">Manage Bookings</a>
+    </aside>
+
+    <main class="container form-main">
+      <h1>Care Request Form</h1>
+
+      <section class="form-layout">
+        <div class="client-col">
+          <h2>Client Details</h2>
+
+          <form id="careRequestForm" class="care-request-form" method="post" action="/api/care-request">
+            <div class="booking-form-grid">
+              <label>
+                First name *
+                <input type="text" name="first_name" required autocomplete="given-name" />
+              </label>
+              <label>
+                Last name *
+                <input type="text" name="last_name" required autocomplete="family-name" />
+              </label>
+              <label>
+                Email *
+                <input type="email" name="email" required autocomplete="email" />
+              </label>
+              <label>
+                Phone
+                <input type="tel" name="phone" autocomplete="tel" />
+              </label>
+              <label class="full">
+                Country/Region *
+                <select name="country_region" required>
+                  <option value="">Choose country</option>
+                  <option value="CA">Canada</option>
+                  <option value="US">United States</option>
+                </select>
+              </label>
+              <label class="full">
+                Address *
+                <input type="text" name="address_line" required autocomplete="street-address" />
+              </label>
+              <label class="full">
+                City *
+                <input type="text" name="city" required autocomplete="address-level2" />
+              </label>
+              <label class="full">
+                Zip / Postal code *
+                <input type="text" name="postal_code" required autocomplete="postal-code" />
+              </label>
+              <label class="full">
+                Add your message
+                <textarea name="message" rows="4"></textarea>
+              </label>
+            </div>
+
+            <div class="care-request-panel">
+              <p>Care request for <span id="careRequestServiceName">Companionship</span></p>
+              <label class="urgency-field selected">
+                <span>
+                  <span>Urgency</span>
+                </span>
+                <select id="urgencyLevel" name="urgency">
+                  <option>Just researching</option>
+                  <option>Need support this week</option>
+                  <option>Need help starting tomorrow</option>
+                </select>
+              </label>
+              <p class="request-note">We confirm details by phone first.</p>
+            </div>
+
+            <input type="hidden" name="service" id="hfService" value="" />
+            <input type="hidden" name="intro_date" id="hfIntroDate" value="" />
+            <input type="hidden" name="intro_time" id="hfIntroTime" value="" />
+            <input type="hidden" name="location_pref" id="hfLocation" value="" />
+          </form>
+        </div>
+
+        <aside class="booking-side">
+          <h2>Request Summary</h2>
+          <div class="booking-side-card">
+            <p>Service Name</p>
+            <span class="detail-name" id="bookingServiceName">Companionship</span>
+            <p>Intro call</p>
+            <p class="booking-summary-value" id="bookingIntroSlot">—</p>
+            <p>Preferred area</p>
+            <p class="booking-summary-value" id="bookingFilterSummary">—</p>
+            <p>Care recipient needs</p>
+            <p>Preferred hours</p>
+            <a href="schedule.html" id="bookingMoreDetails">More details</a>
+            <a href="#" class="booking-status-link">Request status: Pending</a>
+            <button type="submit" form="careRequestForm" class="btn-solid booking-submit" id="bookingSubmitBtn">
+              Submit Request
+            </button>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer booking-footer">
+      <div class="container footer-grid">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <a href="tel:+12368783722" class="footer-contact-link">Phone: +1 (236) 878-3722</a>
+        <a href="mailto:solomon.bagambe1011@gmail.com" class="footer-contact-link">Email: solomon.bagambe1011@gmail.com</a>
+        <a href='about.html#contact-form' class='footer-contact-link'>Get in Touch</a>
+      </div>
+    </footer>
+
+    <script>
+      const services = {
+        companionship: { name: "Companionship" },
+        personal: { name: "Personal Care" },
+        "medication-reminders": { name: "Medication Reminders" },
+        "post-hospital": { name: "Post-Hospital Transition Support" },
+        "escorted-transportation": { name: "Escorted Transportation (Appointments)" },
+        "grocery-errands": { name: "Grocery Shopping & Errands" },
+        "nutritious-meals": { name: "Nutritious Meal Preparation" },
+        "disability-support": { name: "Disability Support & Care" },
+        "social-engagement": { name: "Social Engagement (Talks)" }
+      };
+
+      const sp = new URLSearchParams(window.location.search);
+      const key = sp.get("service") || "companionship";
+      const current = services[key] || services.companionship;
+
+      document.getElementById("careRequestServiceName").textContent = current.name;
+      document.getElementById("bookingServiceName").textContent = current.name;
+
+      const backQs = new URLSearchParams();
+      backQs.set("service", key);
+      ["date", "time", "location"].forEach((k) => {
+        const v = sp.get(k);
+        if (v) backQs.set(k, v);
+      });
+      if (sp.get("expanded") === "1") backQs.set("expanded", "1");
+      document.getElementById("bookingMoreDetails").href = `schedule.html?${backQs.toString()}`;
+
+      const date = sp.get("date");
+      const time = sp.get("time");
+      const loc = sp.get("location");
+      const introEl = document.getElementById("bookingIntroSlot");
+      const filterEl = document.getElementById("bookingFilterSummary");
+      if (date && time) {
+        introEl.textContent = `${date} at ${time}`;
+      } else {
+        introEl.textContent = "Not selected yet";
+      }
+      filterEl.textContent = !loc || loc === "all" ? "Any area" : loc;
+
+      document.getElementById("hfService").value = key;
+      document.getElementById("hfIntroDate").value = date || "";
+      document.getElementById("hfIntroTime").value = time || "";
+      document.getElementById("hfLocation").value = loc || "all";
+
+      document.title = `Care Request Form - ${current.name}`;
+    </script>
+  
+    <script>
+      function toggleSidebar(open) {
+        const nav = document.getElementById("sideNav");
+        const overlay = document.getElementById("sideOverlay");
+        if (!nav || !overlay) return;
+        nav.classList.toggle("open", open);
+        overlay.classList.toggle("show", open);
+      }
+    </script>
+  </body>
+</html>

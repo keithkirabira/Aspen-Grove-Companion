@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Aspen Grove Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <button class="menu-btn" aria-label="Open navigation" onclick="toggleSidebar(true)">&#9776;</button>
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="booking.html">Service Page</a>
+          <a href="about.html">About Us</a>
+          <a href="faq.html">FAQ</a>
+        </nav>
+      </div>
+    </header>
+    <div class="side-overlay" id="sideOverlay" onclick="toggleSidebar(false)"></div>
+    <aside class="side-nav" id="sideNav" aria-label="Sidebar navigation">
+      <button class="side-close" aria-label="Close navigation" onclick="toggleSidebar(false)">X</button>
+      <a href="index.html">Home</a>
+      <a href="booking.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="schedule.html">Book Free 15-Min Intro Call</a>
+      <a href="manage-bookings.html">Manage Bookings</a>
+    </aside>
+
+    <main class="about-main">
+      <section class="about-hero container">
+        <div class="about-hero-copy">
+          <p class="eyebrow">Trusted Home Care in Edmonton, Canada</p>
+          <h1>Compassionate care that helps families feel safe, supported, and respected.</h1>
+          <p>
+            Our mission is to enhance quality of life through personalized in-home care, fostering independence,
+            dignity, and meaningful connection for individuals and their families.
+          </p>
+        </div>
+        <div class="about-hero-image">
+          <img
+            src="assets/about-1.png"
+            alt="Caregiver holding an older adult's hand"
+            id="aboutHeroRotatingImage"
+          />
+        </div>
+      </section>
+
+      <section class="about-section container">
+        <h2>Our Story</h2>
+        <p>
+          Aspen Grove Companion was founded to fill a gap in dependable, high-quality home care for families who want
+          consistency and compassion, not just shift coverage.
+        </p>
+        <p>
+          We encourage every family-run team member to share their personal caregiving story here, especially if this
+          work began by caring for a parent or loved one. That human connection builds trust from the very first call.
+        </p>
+      </section>
+
+      <section class="about-section container">
+        <h2>Safety First Commitment</h2>
+        <div class="about-grid">
+          <article class="about-card">
+            <h3>Vulnerable Sector Checks</h3>
+            <p>Every caregiver completes a clean criminal record and vulnerable sector check before client placement.</p>
+          </article>
+          <article class="about-card">
+            <h3>Insurance</h3>
+            <p>We are fully insured and aligned with Canadian workplace health and safety requirements.</p>
+          </article>
+          <article class="about-card">
+            <h3>First Aid & CPR Certified</h3>
+            <p>All team members are trained in emergency response and maintain current First Aid/CPR credentials.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="about-section container">
+        <h2>Our Values</h2>
+        <div class="about-grid values-grid">
+          <article class="about-card">
+            <h3>Compassion</h3>
+            <p>Treating every client with warmth, patience, and dignity, like family.</p>
+          </article>
+          <article class="about-card">
+            <h3>Reliability</h3>
+            <p>Showing up on time, prepared, and consistent with every care plan.</p>
+          </article>
+          <article class="about-card">
+            <h3>Integrity</h3>
+            <p>Clear communication, honest pricing, and transparent recommendations.</p>
+          </article>
+          <article class="about-card">
+            <h3>Confidentiality</h3>
+            <p>
+              Personal and health-related information is handled discreetly, in line with Canadian privacy expectations,
+              so families can speak openly without worry.
+            </p>
+          </article>
+          <article class="about-card">
+            <h3>Respect</h3>
+            <p>
+              We honour each person’s preferences, pace, and independence—listening first and supporting choices in
+              daily routines, home life, and care decisions.
+            </p>
+          </article>
+          <article class="about-card">
+            <h3>Respite Care</h3>
+            <p>
+              Family caregivers deserve dependable breaks. We provide consistent, trusted coverage so loved ones are
+              safe while you rest, work, or recharge.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="about-section container">
+        <h2>Our Approach</h2>
+        <p>
+          We do more than complete hours. We build trusted relationships with clients and families through thoughtful
+          routines, continuity of caregivers, and regular updates to loved ones.
+        </p>
+      </section>
+
+      <section class="about-section container">
+        <h2>Canadian Community & Privacy</h2>
+        <div class="about-grid">
+          <article class="about-card">
+            <h3>Language & Diversity</h3>
+            <p>Care support available in English, French, and other languages upon request.</p>
+          </article>
+          <article class="about-card">
+            <h3>Community Involvement</h3>
+            <p>Active in local care networks, community outreach, and professional associations across the Edmonton region.</p>
+          </article>
+          <article class="about-card">
+            <h3>PIPEDA Privacy Commitment</h3>
+            <p>We respect your privacy and handle all health information according to Canadian privacy laws (PIPEDA).</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="about-section container about-form-wrap" id="contact-form">
+        <h2>Get In Touch</h2>
+        <p class="about-form-intro">Tell us a bit about your loved one's needs and we will respond quickly.</p>
+        <form class="about-form" method="post" action="/api/contact-lead">
+          <label>
+            Name of the Caller
+            <input type="text" name="caller_name" required autocomplete="name" />
+          </label>
+          <label>
+            Name of the Care Recipient
+            <input type="text" name="care_recipient_name" required />
+          </label>
+          <label>
+            City / Neighborhood
+            <input type="text" name="city_neighborhood" autocomplete="address-level2" />
+          </label>
+          <label>
+            How did you hear about us?
+            <select name="referral_source">
+              <option value="">Choose one</option>
+              <option value="Referral">Referral</option>
+              <option value="Google">Google</option>
+              <option value="Social Media">Social Media</option>
+              <option value="Community Event">Community Event</option>
+            </select>
+          </label>
+          <label class="full">
+            Message
+            <textarea
+              name="message"
+              placeholder="Tell us a bit about your loved one's needs."
+            ></textarea>
+          </label>
+          <button type="submit" class="btn-send full">Send Message</button>
+        </form>
+      </section>
+
+      <section class="about-cta container">
+        <h2>Ready to talk through care options?</h2>
+        <a href="schedule.html" class="btn-solid">Schedule Your Free Consultation</a>
+      </section>
+    </main>
+
+    <footer class="site-footer booking-footer">
+      <div class="container footer-grid">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <a href="tel:+12368783722" class="footer-contact-link">Phone: +1 (236) 878-3722</a>
+        <a href="mailto:solomon.bagambe1011@gmail.com" class="footer-contact-link">Email: solomon.bagambe1011@gmail.com</a>
+        <a href='about.html#contact-form' class='footer-contact-link'>Get in Touch</a>
+      </div>
+    </footer>
+
+    <script>
+      function initAboutImageRotation() {
+        const image = document.getElementById("aboutHeroRotatingImage");
+        if (!image) return;
+
+        const imagePool = ["assets/about-1.png", "assets/about-2.png", "assets/about-3.png", "assets/about-4.png"];
+
+        const shuffle = (list) => {
+          const arr = [...list];
+          for (let i = arr.length - 1; i > 0; i -= 1) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+          }
+          return arr;
+        };
+
+        let queue = shuffle(imagePool);
+
+        const nextImage = (currentSrc) => {
+          if (!queue.length) queue = shuffle(imagePool);
+          let candidate = queue.pop();
+
+          if (candidate === currentSrc && imagePool.length > 1) {
+            if (!queue.length) queue = shuffle(imagePool);
+            candidate = queue.pop();
+          }
+
+          return candidate;
+        };
+
+        image.setAttribute("src", nextImage(image.getAttribute("src")));
+        setInterval(() => {
+          const current = image.getAttribute("src");
+          image.setAttribute("src", nextImage(current));
+        }, 2200);
+      }
+
+      initAboutImageRotation();
+    </script>
+
+    <script>
+      function toggleSidebar(open) {
+        const nav = document.getElementById("sideNav");
+        const overlay = document.getElementById("sideOverlay");
+        if (!nav || !overlay) return;
+        nav.classList.toggle("open", open);
+        overlay.classList.toggle("show", open);
+      }
+    </script>
+  </body>
+</html>

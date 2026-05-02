@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schedule Your Service - Aspen Grove Care</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <button class="menu-btn" aria-label="Open navigation" onclick="toggleSidebar(true)">&#9776;</button>
+        <nav class="main-nav">
+          <a href="index.html">Home</a>
+          <a href="booking.html">Service Page</a>
+          <a href="about.html">About Us</a>
+          <a href="faq.html">FAQ</a>
+        </nav>
+      </div>
+    </header>
+    <div class="side-overlay" id="sideOverlay" onclick="toggleSidebar(false)"></div>
+    <aside class="side-nav" id="sideNav" aria-label="Sidebar navigation">
+      <button class="side-close" aria-label="Close navigation" onclick="toggleSidebar(false)">X</button>
+      <a href="index.html">Home</a>
+      <a href="booking.html">Services</a>
+      <a href="about.html">About Us</a>
+      <a href="faq.html">FAQ</a>
+      <a href="schedule.html">Book Free 15-Min Intro Call</a>
+      <a href="manage-bookings.html">Manage Bookings</a>
+    </aside>
+
+    <main class="container schedule-main">
+      <a href="#" id="scheduleBack" class="schedule-back">Back</a>
+
+      <h1>Book a Free 15-Min Intro Call</h1>
+      <p class="schedule-sub">
+        Choose a preferred date and time. We will call to discuss care needs and next steps.
+      </p>
+
+      <div class="schedule-filters">
+        <span>Filter by:</span>
+        <label class="schedule-filter">
+          Location
+          <select id="filterLocation" aria-label="Filter by location">
+            <option value="all">All</option>
+            <option value="Edmonton">Edmonton</option>
+            <option value="Leduc">Leduc</option>
+            <option value="St. Albert">St. Albert</option>
+          </select>
+        </label>
+      </div>
+
+      <section class="schedule-grid">
+        <div class="calendar-block">
+          <h2>Select a Date and Time</h2>
+          <div class="calendar-head">
+            <button type="button" class="cal-nav-btn" id="calPrev" aria-label="Previous month">&lsaquo;</button>
+            <span id="calMonthLabel" class="cal-month-label">May 2026</span>
+            <button type="button" class="cal-nav-btn" id="calNext" aria-label="Next month">&rsaquo;</button>
+          </div>
+          <div class="weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="dates" id="calendarDates" role="grid" aria-label="Calendar dates"></div>
+        </div>
+
+        <div class="times-block">
+          <div class="timezone" id="timezoneLine">Time zone: Mountain Time (Alberta)</div>
+          <p class="availability" id="availabilityLabel">Availability</p>
+          <div class="time-slots" id="timeSlots"></div>
+          <button type="button" class="show-sessions" id="toggleMoreSlots">Show all sessions</button>
+        </div>
+
+        <aside class="details-block" id="detailsBlock">
+          <h3>Service Details</h3>
+          <p class="detail-name" id="scheduleServiceName">Companionship</p>
+          <div class="schedule-detail-extra" id="scheduleDetailExtra">
+            <ul class="schedule-detail-list">
+              <li><span class="detail-k">Location</span> <span class="detail-v" id="detailLocation">—</span></li>
+              <li><span class="detail-k">Duration</span> <span class="detail-v" id="detailDuration">15 minutes</span></li>
+            </ul>
+          </div>
+          <button type="button" id="lessDetailsBtn" class="less-details">Less details</button>
+          <a href="#" id="nextStepLink" class="btn-solid next-btn">Continue Request</a>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer booking-footer">
+      <div class="container footer-grid">
+        <div class="brand">
+          <img src="assets/logo.png" alt="Aspen Grove Companion logo" class="brand-logo" />
+        </div>
+        <a href="tel:+12368783722" class="footer-contact-link">Phone: +1 (236) 878-3722</a>
+        <a href="mailto:solomon.bagambe1011@gmail.com" class="footer-contact-link">Email: solomon.bagambe1011@gmail.com</a>
+        <a href='about.html#contact-form' class='footer-contact-link'>Get in Touch</a>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        const serviceMap = {
+          companionship: "Companionship",
+          personal: "Personal Care",
+          "medication-reminders": "Medication Reminders",
+          "post-hospital": "Post-Hospital Transition Support",
+          "escorted-transportation": "Escorted Transportation (Appointments)",
+          "grocery-errands": "Grocery Shopping & Errands",
+          "nutritious-meals": "Nutritious Meal Preparation",
+          "disability-support": "Disability Support & Care",
+          "social-engagement": "Social Engagement (Talks)"
+        };
+
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ];
+        const weekdayLong = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ];
+
+        const params = new URLSearchParams(window.location.search);
+        const serviceKey = params.get("service") || "companionship";
+        const serviceName = serviceMap[serviceKey] || "Companionship";
+
+        document.getElementById("scheduleServiceName").textContent = serviceName;
+        document.getElementById("scheduleBack").href = `service.html?service=${encodeURIComponent(serviceKey)}`;
+
+        const calDates = document.getElementById("calendarDates");
+        const calMonthLabel = document.getElementById("calMonthLabel");
+        const calPrev = document.getElementById("calPrev");
+        const calNext = document.getElementById("calNext");
+        const availabilityLabel = document.getElementById("availabilityLabel");
+        const timeSlots = document.getElementById("timeSlots");
+        const filterLocation = document.getElementById("filterLocation");
+        const nextStepLink = document.getElementById("nextStepLink");
+        const toggleMoreSlots = document.getElementById("toggleMoreSlots");
+        const detailsBlock = document.getElementById("detailsBlock");
+        const lessDetailsBtn = document.getElementById("lessDetailsBtn");
+        const detailLocation = document.getElementById("detailLocation");
+
+        let viewYear;
+        let viewMonth;
+        let selectedYmd;
+        let selectedTimeLabel = null;
+        let expandedSlots = false;
+        let detailsExpanded = true;
+
+        function pad2(n) {
+          return String(n).padStart(2, "0");
+        }
+
+        function ymd(d) {
+          return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+        }
+
+        function parseYmd(s) {
+          const p = String(s).split("-").map(Number);
+          if (p.length !== 3 || p.some((x) => Number.isNaN(x))) return null;
+          const d = new Date(p[0], p[1] - 1, p[2]);
+          if (d.getFullYear() !== p[0] || d.getMonth() !== p[1] - 1 || d.getDate() !== p[2]) return null;
+          return d;
+        }
+
+        function startOfDay(d) {
+          const x = new Date(d);
+          x.setHours(0, 0, 0, 0);
+          return x;
+        }
+
+        function minutesToLabel(totalMin) {
+          let h = Math.floor(totalMin / 60);
+          const m = totalMin % 60;
+          const am = h < 12;
+          let h12 = h % 12;
+          if (h12 === 0) h12 = 12;
+          const mm = m === 0 ? ":00" : `:${pad2(m)}`;
+          return `${h12}${mm} ${am ? "a.m." : "p.m."}`;
+        }
+
+        function slotListForSelection() {
+          const loc = filterLocation.value;
+          const d = parseYmd(selectedYmd);
+          const dow = d ? d.getDay() : 0;
+
+          let startMin = 9 * 60;
+          let endMin = 17 * 60;
+          if (loc === "Leduc") startMin = 10 * 60;
+          if (loc === "St. Albert") startMin = 9 * 60 + 30;
+          if (dow === 0 || dow === 6) endMin = 14 * 60;
+
+          const list = [];
+          for (let t = startMin; t <= endMin; t += 30) {
+            list.push(minutesToLabel(t));
+          }
+
+          if (expandedSlots) {
+            for (let t = 17 * 60 + 30; t <= 20 * 60; t += 30) {
+              list.push(minutesToLabel(t));
+            }
+          }
+
+          return list;
+        }
+
+        function renderCalendar() {
+          calMonthLabel.textContent = `${monthNames[viewMonth]} ${viewYear}`;
+          calDates.innerHTML = "";
+
+          const first = new Date(viewYear, viewMonth, 1);
+          const startPad = first.getDay();
+          const dim = new Date(viewYear, viewMonth + 1, 0).getDate();
+          const today = startOfDay(new Date());
+
+          for (let i = 0; i < startPad; i++) {
+            const span = document.createElement("span");
+            span.className = "cal-pad";
+            span.setAttribute("aria-hidden", "true");
+            calDates.appendChild(span);
+          }
+
+          for (let day = 1; day <= dim; day++) {
+            const cellDate = startOfDay(new Date(viewYear, viewMonth, day));
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "calendar-day";
+            btn.textContent = String(day);
+            btn.setAttribute("aria-pressed", ymd(cellDate) === selectedYmd ? "true" : "false");
+
+            if (cellDate < today) {
+              btn.disabled = true;
+              btn.classList.add("cal-disabled");
+            } else {
+              if (ymd(cellDate) === selectedYmd) btn.classList.add("active-date");
+              btn.addEventListener("click", () => {
+                selectedYmd = ymd(cellDate);
+                selectedTimeLabel = null;
+                renderCalendar();
+                refreshTimesAndCopy();
+              });
+            }
+            calDates.appendChild(btn);
+          }
+
+          const totalCells = startPad + dim;
+          const trailing = (7 - (totalCells % 7)) % 7;
+          for (let i = 0; i < trailing; i++) {
+            const span = document.createElement("span");
+            span.className = "cal-pad";
+            span.setAttribute("aria-hidden", "true");
+            calDates.appendChild(span);
+          }
+        }
+
+        function refreshTimesAndCopy() {
+          const d = parseYmd(selectedYmd);
+          if (!d) return;
+          availabilityLabel.textContent = `Availability for ${weekdayLong[d.getDay()]}, ${
+            monthNames[d.getMonth()]
+          } ${d.getDate()}, ${d.getFullYear()}`;
+
+          const slots = slotListForSelection();
+          timeSlots.innerHTML = "";
+          if (!slots.length) {
+            const p = document.createElement("p");
+            p.className = "availability";
+            p.textContent = "No openings match these filters. Try another day or adjust filters.";
+            timeSlots.appendChild(p);
+            selectedTimeLabel = null;
+          } else {
+            if (!selectedTimeLabel || !slots.includes(selectedTimeLabel)) {
+              selectedTimeLabel = slots[0];
+            }
+            slots.forEach((label) => {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.textContent = label;
+              if (label === selectedTimeLabel) btn.classList.add("active-time");
+              btn.addEventListener("click", () => {
+                timeSlots.querySelectorAll("button").forEach((b) => b.classList.remove("active-time"));
+                btn.classList.add("active-time");
+                selectedTimeLabel = label;
+                syncContinueHref();
+              });
+              timeSlots.appendChild(btn);
+            });
+          }
+
+          updateSidebarDetails();
+          syncContinueHref();
+        }
+
+        function updateSidebarDetails() {
+          const loc = filterLocation.value;
+          detailLocation.textContent = loc === "all" ? "Any (Alberta)" : loc;
+        }
+
+        function syncContinueHref() {
+          const loc = filterLocation.value;
+          const q = new URLSearchParams();
+          q.set("service", serviceKey);
+          if (selectedYmd) q.set("date", selectedYmd);
+          if (selectedTimeLabel) q.set("time", selectedTimeLabel);
+          q.set("location", loc);
+          if (expandedSlots) q.set("expanded", "1");
+          nextStepLink.href = `booking-form.html?${q.toString()}`;
+        }
+
+        function firstSelectableIn(viewY, viewM) {
+          const dim = new Date(viewY, viewM + 1, 0).getDate();
+          const today = startOfDay(new Date());
+          for (let day = 1; day <= dim; day++) {
+            const cd = startOfDay(new Date(viewY, viewM, day));
+            if (cd >= today) return cd;
+          }
+          return null;
+        }
+
+        function ensureValidSelectionForView() {
+          const today = startOfDay(new Date());
+          let pick = firstSelectableIn(viewYear, viewMonth);
+          if (!pick) {
+            viewYear = today.getFullYear();
+            viewMonth = today.getMonth();
+            pick = today;
+          }
+          const current = parseYmd(selectedYmd);
+          if (
+            !current ||
+            current < today ||
+            current.getFullYear() !== viewYear ||
+            current.getMonth() !== viewMonth
+          ) {
+            selectedYmd = ymd(pick);
+            selectedTimeLabel = null;
+          }
+        }
+
+        calPrev.addEventListener("click", () => {
+          viewMonth -= 1;
+          if (viewMonth < 0) {
+            viewMonth = 11;
+            viewYear -= 1;
+          }
+          ensureValidSelectionForView();
+          renderCalendar();
+          refreshTimesAndCopy();
+        });
+
+        calNext.addEventListener("click", () => {
+          viewMonth += 1;
+          if (viewMonth > 11) {
+            viewMonth = 0;
+            viewYear += 1;
+          }
+          ensureValidSelectionForView();
+          renderCalendar();
+          refreshTimesAndCopy();
+        });
+
+        filterLocation.addEventListener("change", () => {
+          selectedTimeLabel = null;
+          refreshTimesAndCopy();
+        });
+
+        toggleMoreSlots.addEventListener("click", () => {
+          expandedSlots = !expandedSlots;
+          toggleMoreSlots.textContent = expandedSlots ? "Show fewer sessions" : "Show all sessions";
+          selectedTimeLabel = null;
+          refreshTimesAndCopy();
+        });
+
+        lessDetailsBtn.addEventListener("click", () => {
+          detailsExpanded = !detailsExpanded;
+          detailsBlock.classList.toggle("is-collapsed", !detailsExpanded);
+          lessDetailsBtn.textContent = detailsExpanded ? "Less details" : "More details";
+        });
+
+        const today = startOfDay(new Date());
+        viewYear = today.getFullYear();
+        viewMonth = today.getMonth();
+
+        const urlDate = params.get("date");
+        const parsedUrl = urlDate ? parseYmd(urlDate) : null;
+        if (parsedUrl && parsedUrl >= today) {
+          selectedYmd = ymd(parsedUrl);
+          viewYear = parsedUrl.getFullYear();
+          viewMonth = parsedUrl.getMonth();
+        } else {
+          selectedYmd = ymd(today);
+        }
+
+        const urlLoc = params.get("location");
+        if (urlLoc && [...filterLocation.options].some((o) => o.value === urlLoc)) {
+          filterLocation.value = urlLoc;
+        }
+
+        const urlTime = params.get("time");
+        if (urlTime) selectedTimeLabel = urlTime;
+
+        if (params.get("expanded") === "1") {
+          expandedSlots = true;
+          toggleMoreSlots.textContent = "Show fewer sessions";
+        }
+
+        ensureValidSelectionForView();
+        renderCalendar();
+        refreshTimesAndCopy();
+
+        if (urlTime && timeSlots.querySelectorAll("button").length) {
+          const buttons = timeSlots.querySelectorAll("button");
+          let found = false;
+          buttons.forEach((b) => {
+            b.classList.remove("active-time");
+            if (b.textContent === urlTime) {
+              b.classList.add("active-time");
+              selectedTimeLabel = urlTime;
+              found = true;
+            }
+          });
+          if (!found) {
+            selectedTimeLabel = buttons[0].textContent;
+            buttons[0].classList.add("active-time");
+          }
+          syncContinueHref();
+        }
+      })();
+    </script>
+  
+    <script>
+      function toggleSidebar(open) {
+        const nav = document.getElementById("sideNav");
+        const overlay = document.getElementById("sideOverlay");
+        if (!nav || !overlay) return;
+        nav.classList.toggle("open", open);
+        overlay.classList.toggle("show", open);
+      }
+    </script>  </body>
+</html>
