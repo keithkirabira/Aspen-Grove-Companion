@@ -3,6 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          if (new URLSearchParams(window.location.search).get("from") === "contact") {
+            document.documentElement.classList.add("thank-msg");
+          }
+        } catch (e) {}
+      })();
+    </script>
     <title>Thank You - Aspen Grove Care</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,6 +48,19 @@
     </aside>
 
     <main class="container thank-main">
+      <section id="thankMessagePanel" class="thank-message-panel">
+        <h1>Thank you for your message</h1>
+        <p>
+          We have received your note and will reply as soon as we can — usually within 15 minutes during
+          working hours.
+        </p>
+        <div class="thank-message-actions">
+          <a href="index.html" class="btn-solid">Back to home</a>
+          <a href="booking.html" class="continue-browse">Continue browsing services</a>
+        </div>
+      </section>
+
+      <div id="thankCareRequestPanel">
       <section class="thank-header">
         <h1>Request received, Customer Name</h1>
         <p>Thank you. We will call you shortly to discuss care details and confirm your request.</p>
@@ -79,6 +101,7 @@
       </section>
 
       <a href="booking.html" class="continue-browse">Continue Browsing</a>
+      </div>
     </main>
 
     <footer class="site-footer booking-footer">
@@ -105,11 +128,18 @@
         "social-engagement": { name: "Social Engagement (Talks)" }
       };
 
-      const key = new URLSearchParams(window.location.search).get("service") || "companionship";
-      const current = services[key] || services.companionship;
-      document.getElementById("thankServiceName").textContent = current.name;
-      document.getElementById("thankTotal").textContent = "Pending";
-      document.title = `Thank You - ${current.name}`;
+      const sp = new URLSearchParams(window.location.search);
+      const isContactForm = sp.get("from") === "contact";
+
+      if (isContactForm) {
+        document.title = "Thank You - Aspen Grove Care";
+      } else {
+        const key = sp.get("service") || "companionship";
+        const current = services[key] || services.companionship;
+        document.getElementById("thankServiceName").textContent = current.name;
+        document.getElementById("thankTotal").textContent = "Pending";
+        document.title = `Thank You - ${current.name}`;
+      }
     </script>
   
     <script>

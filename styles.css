@@ -1089,6 +1089,46 @@ h3 {
   padding: 24px 0 30px;
 }
 
+#thankMessagePanel {
+  display: none;
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 20px 0 32px;
+}
+
+html.thank-msg #thankMessagePanel {
+  display: block;
+}
+
+html.thank-msg #thankCareRequestPanel {
+  display: none;
+}
+
+.thank-message-panel h1 {
+  font-size: clamp(36px, 4vw, 52px);
+  margin-bottom: 16px;
+}
+
+.thank-message-panel > p {
+  font-size: 15px;
+  line-height: 1.55;
+  margin: 0 0 28px;
+  color: var(--ink);
+}
+
+.thank-message-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.thank-message-actions .btn-solid {
+  min-width: 200px;
+  text-align: center;
+}
+
 .thank-header {
   text-align: center;
   margin-bottom: 16px;
