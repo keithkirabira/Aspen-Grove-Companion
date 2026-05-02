@@ -1,10 +1,58 @@
 /**
  * Outbound email for form notifications (nodemailer + SMTP).
- * Configure SMTP_URL or SMTP_HOST (+ SMTP_USER / SMTP_PASS) on Render.
+ *
+ * Gmail-style (same idea as PHPMailer: isSMTP, smtp.gmail.com, 587, TLS):
+ *   SMTP_HOST=smtp.gmail.com
+ *   SMTP_PORT=587
+ *   SMTP_SECURE=tls
+ *   SMTP_USER=your-email@gmail.com
+ *   SMTP_PASS=your-google-app-password
+ *   EMAIL_FROM=your-email@gmail.com
+ *
+ * Or set SMTP_URL (e.g. SendGrid) instead of the discrete vars above.
  */
 const nodemailer = require("nodemailer");
 
 const DEFAULT_NOTIFY_TO = "solomon.bagambe1011@gmail.com";
+
+function buildHostTransportOptions() {
+  const host = process.env.SMTP_HOST?.trim();
+  const port = Number(process.env.SMTP_PORT || 587);
+  const explicit = process.env.SMTP_SECURE?.trim();
+  const mode = (explicit || (port === 465 ? "ssl" : "tls")).toLowerCase();
+
+  // PHPMailer: SMTPSecure = 'ssl' / port 465  →  nodemailer secure: true
+  // PHPMailer: SMTPSecure = 'tls' / port 587  →  nodemailer secure: false + STARTTLS
+  let secure = false;
+  let requireTLS = false;
+  if (mode === "ssl" || mode === "smtps" || mode === "true" || mode === "1") {
+    secure = true;
+  } else if (mode === "tls" || mode === "starttls") {
+    secure = false;
+    requireTLS = process.env.SMTP_REQUIRE_TLS !== "false";
+  } else if (mode === "false" || mode === "0") {
+    secure = false;
+  } else {
+    secure = port === 465;
+    if (!secure && port === 587) {
+      requireTLS = process.env.SMTP_REQUIRE_TLS !== "false";
+    }
+  }
+
+  const opts = {
+    host,
+    port,
+    secure,
+    auth:
+      process.env.SMTP_USER != null && String(process.env.SMTP_USER).length
+        ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS || "" }
+        : undefined,
+  };
+  if (requireTLS) {
+    opts.requireTLS = true;
+  }
+  return opts;
+}
 
 function getTransport() {
   const smtpUrl = process.env.SMTP_URL?.trim();
@@ -13,16 +61,7 @@ function getTransport() {
   }
   const host = process.env.SMTP_HOST?.trim();
   if (!host) return null;
-  const port = Number(process.env.SMTP_PORT || 587);
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: process.env.SMTP_SECURE === "true" || port === 465,
-    auth:
-      process.env.SMTP_USER != null && String(process.env.SMTP_USER).length
-        ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS || "" }
-        : undefined,
-  });
+  return nodemailer.createTransport(buildHostTransportOptions());
 }
 
 function isMailConfigured() {
