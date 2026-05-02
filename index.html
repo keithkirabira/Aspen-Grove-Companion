@@ -39,25 +39,25 @@
     </aside>
 
     <main>
-      <section class="hero container">
-        <div class="hero-copy">
-          <h1>
-            Trusted Companion and Respite Care for Seniors, People with
-            Disabilities, and Other Vulnerable Adults
-          </h1>
-          <p>
-            Aspen Grove Companion Services provides non-medical support that
-            helps seniors and adults with disabilities live safely at home. We
-            focus on dignity, consistency, and genuine companionship.
-          </p>
-          <a class="inline-link" href="schedule.html">Book Free 15-Min Intro Call</a>
-        </div>
-        <div class="hero-image">
+      <section class="hero container hero--banner">
+        <h1 class="hero-sr-only">
+          Trusted Companion Care for individuals and Families-Supporting all ages and life stages.
+        </h1>
+        <p class="hero-sr-only">
+          Aspen Grove Companion Services provides reliable, non-medical in-home support to individuals and families of
+          all ages. We are dedicated to helping people live safely, comfortably, and independently at home, with a focus
+          on dignity, consistency, and genuine companionship.
+        </p>
+        <div class="hero-banner-frame">
           <img
-            src="assets/hero-1.png"
-            alt="Caregiver with senior on sofa"
-            id="homeHeroRotatingImage"
+            src="assets/hero-home-banner.png"
+            alt=""
+            class="hero-banner-img"
+            decoding="async"
           />
+        </div>
+        <div class="hero-cta-row">
+          <a class="inline-link" href="schedule.html">Book Free 15-Min Intro Call</a>
         </div>
       </section>
 
@@ -160,6 +160,17 @@
               <h3>Disability Support &amp; Care</h3>
               <p>Dignified daily routines and personal support</p>
               <a href="service.html?service=disability-support" class="btn-solid">Request a Care Quote</a>
+            </div>
+          </article>
+          <article class="service-card">
+            <img
+              src="assets/service-respite-care.png"
+              alt="Caregiver sitting with a young client in a wheelchair in a bright home setting"
+            />
+            <div class="card-body">
+              <h3>Respite Care</h3>
+              <p>Trusted in-home coverage so family caregivers can rest, work, or recharge</p>
+              <a href="service.html?service=respite-care" class="btn-solid">Request a Care Quote</a>
             </div>
           </article>
           <article class="service-card">
@@ -286,47 +297,6 @@
       </div>
     </footer>
   
-    <script>
-      function initHeroImageRotation() {
-        const image = document.getElementById("homeHeroRotatingImage");
-        if (!image) return;
-
-        const imagePool = ["assets/hero-1.png", "assets/hero-2.png", "assets/hero-3.png", "assets/hero-4.png", "assets/hero-5.png"];
-
-        const shuffle = (list) => {
-          const arr = [...list];
-          for (let i = arr.length - 1; i > 0; i -= 1) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-          }
-          return arr;
-        };
-
-        let queue = shuffle(imagePool);
-
-        const nextImage = (currentSrc) => {
-          if (!queue.length) queue = shuffle(imagePool);
-          let candidate = queue.pop();
-
-          if (candidate === currentSrc && imagePool.length > 1) {
-            if (!queue.length) queue = shuffle(imagePool);
-            candidate = queue.pop();
-          }
-
-          return candidate;
-        };
-
-        image.setAttribute("src", nextImage(image.getAttribute("src")));
-
-        setInterval(() => {
-          const current = image.getAttribute("src");
-          image.setAttribute("src", nextImage(current));
-        }, 2400);
-      }
-
-      initHeroImageRotation();
-    </script>
-
     <script>
       function initServicesMarquee() {
         const track = document.getElementById("servicesTrack");

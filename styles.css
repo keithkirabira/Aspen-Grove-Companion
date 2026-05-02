@@ -163,6 +163,42 @@ h3 {
   background: #f8f7f4;
 }
 
+.hero--banner {
+  display: block;
+  border: 1px solid var(--line);
+  background: #f8f7f4;
+  padding-bottom: 8px;
+}
+
+.hero-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hero-banner-frame {
+  overflow: hidden;
+  background: #f8f7f4;
+  line-height: 0;
+}
+
+.hero-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hero-cta-row {
+  padding: 18px 16px 10px;
+  text-align: center;
+}
+
 .hero-copy {
   padding: 56px 52px;
 }

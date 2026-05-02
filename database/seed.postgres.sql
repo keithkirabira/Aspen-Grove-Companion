@@ -10,5 +10,6 @@ VALUES
   ('grocery-errands', 'Grocery Shopping & Errands', 'Groceries, prescriptions, and essentials handled with care', 60),
   ('nutritious-meals', 'Nutritious Meal Preparation', 'Dietary restrictions respected, from prep to cleanup', 70),
   ('disability-support', 'Disability Support & Care', 'Independence and dignity in daily routines', 80),
+  ('respite-care', 'Respite Care', 'Planned breaks for family caregivers', 85),
   ('social-engagement', 'Social Engagement (Talks)', 'Conversation, stimulation, and connection at home', 90)
 ON CONFLICT (slug) DO NOTHING;

@@ -11,7 +11,7 @@ init-sqlite.ps1       Windows: builds aspen_grove.db if sqlite3 is on PATH
 
 Tables
 ------
-service_types      Nine services (slug matches booking/schedule/service pages)
+service_types      Ten services (slug matches booking/schedule/service pages)
 care_requests      Care request form + intro call date/time + location preference
 contact_leads      Get In Touch form on about.html (when wired to a backend)
 scheduled_visits   Optional future rows for manage-bookings / confirmed visits
