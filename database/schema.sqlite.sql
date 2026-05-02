@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS contact_leads (
 CREATE INDEX IF NOT EXISTS idx_contact_leads_status ON contact_leads (status);
 CREATE INDEX IF NOT EXISTS idx_contact_leads_created ON contact_leads (created_at);
 
--- Optional: scheduled visits / manage-bookings (future UI)
+-- Optional: scheduled visits (future UI)
 CREATE TABLE IF NOT EXISTS scheduled_visits (
   id               INTEGER PRIMARY KEY AUTOINCREMENT,
   care_request_id  INTEGER REFERENCES care_requests (id) ON DELETE SET NULL,
