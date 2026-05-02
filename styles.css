@@ -160,47 +160,15 @@ h3 {
   grid-template-columns: 1fr 1.1fr;
   align-items: stretch;
   border: 1px solid var(--line);
-  background: #f8f7f4;
-}
-
-.hero--banner {
-  display: block;
-  border: 1px solid var(--line);
-  background: #f8f7f4;
-  padding-bottom: 8px;
-}
-
-.hero-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-.hero-banner-frame {
-  overflow: hidden;
-  background: #f8f7f4;
-  line-height: 0;
-}
-
-.hero-banner-img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.hero-cta-row {
-  padding: 18px 16px 10px;
-  text-align: center;
+  background: #faf8f3;
 }
 
 .hero-copy {
   padding: 56px 52px;
+  background: #faf8f3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .hero-image {
@@ -210,21 +178,29 @@ h3 {
   background: #e8e4dc;
 }
 
-.hero h1 {
-  font-size: clamp(42px, 4.2vw, 62px);
-  line-height: 0.93;
+.hero-copy h1 {
+  color: #1a3d32;
+  font-size: clamp(36px, 3.6vw, 56px);
+  line-height: 1.12;
   font-style: italic;
   font-weight: 600;
-  margin-bottom: 26px;
+  margin: 0 0 28px;
+  max-width: 18ch;
 }
 
-.hero p {
-  max-width: 550px;
+.hero-copy p {
+  color: #1a3d32;
+  max-width: 28em;
   font-family: "Cormorant Garamond", serif;
-  font-size: clamp(28px, 4.2vw, 45px);
-  line-height: 0.98;
-  margin: 0 0 26px;
+  font-size: clamp(19px, 2.1vw, 26px);
+  line-height: 1.5;
+  margin: 0 0 28px;
   font-style: italic;
+  font-weight: 400;
+}
+
+.hero-copy .inline-link {
+  align-self: flex-start;
 }
 
 .inline-link {
@@ -233,7 +209,7 @@ h3 {
   font-size: 14px;
 }
 
-.hero-image img {
+.hero-image .hero-rotating-img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -241,6 +217,14 @@ h3 {
   object-fit: cover;
   object-position: center;
   display: block;
+  opacity: 0;
+  transition: opacity 1.1s ease;
+  z-index: 0;
+}
+
+.hero-image .hero-rotating-img.is-active {
+  opacity: 1;
+  z-index: 1;
 }
 
 .mission {
@@ -1878,9 +1862,10 @@ html.thank-msg #thankCareRequestPanel {
     padding: 24px 20px;
   }
 
-  .hero h1 {
+  .hero-copy h1 {
     line-height: 1;
     margin-bottom: 16px;
+    max-width: none;
   }
 
   .mission {
