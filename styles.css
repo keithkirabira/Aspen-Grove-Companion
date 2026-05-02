@@ -467,19 +467,6 @@ h3 {
   width: 100%;
 }
 
-.image-section {
-  background: #bfd6d2;
-  padding: 22px;
-  margin-bottom: 28px;
-}
-
-.image-section img {
-  width: 100%;
-  display: block;
-  object-fit: cover;
-  max-height: 560px;
-}
-
 .site-footer {
   border-top: 1px solid #e3e1db;
   padding: 20px 0;
