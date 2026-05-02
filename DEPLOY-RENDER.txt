@@ -32,13 +32,20 @@ or your Render URL.
 
 Where submissions go
 --------------------
-On the server, each POST is appended to:
-  data/contact.jsonl          (home page contact section)
-  data/contact-leads.jsonl  (About Get In Touch)
-  data/care-requests.jsonl  (Care Request Form)
+If the environment variable DATABASE_URL is set (PostgreSQL connection string),
+each POST is stored in the tables from database/schema.postgresql.sql
+(contact_leads, care_requests). Run the schema and seed once:
 
-Download these from Render Shell or add a database later; the SQL files in
-database/ are optional and are not wired to this server yet.
+  psql "$DATABASE_URL" -f database/schema.postgresql.sql
+  psql "$DATABASE_URL" -f database/seed.postgres.sql
+
+(On Windows PowerShell, use psql with $env:DATABASE_URL.)
+
+If DATABASE_URL is not set, each POST is appended to JSONL files for local
+testing only:
+  data/contact.jsonl          (home page contact section)
+  data/contact-leads.jsonl    (About Get In Touch)
+  data/care-requests.jsonl   (Care Request Form)
 
 Notes
 -----

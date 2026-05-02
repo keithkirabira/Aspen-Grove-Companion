@@ -30,5 +30,6 @@ PostgreSQL
   psql "$env:DATABASE_URL" -f schema.postgresql.sql
   psql "$env:DATABASE_URL" -f seed.postgres.sql
 
-Linking the static site to this DB requires a server (Node, PHP, etc.) that runs
-SQL or an API; the HTML pages do not talk to the database by themselves.
+The Node server (server.js) uses DATABASE_URL when set: forms are inserted into
+PostgreSQL; otherwise submissions go to ./data/*.jsonl. The HTML pages only POST
+to the server; they do not connect to the database directly.

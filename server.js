@@ -1,14 +1,27 @@
 /**
- * Serves the static site and accepts form POSTs (saved under ./data for testing).
- * Render: Web Service with startCommand "npm start"
+ * Serves the static site and accepts form POSTs.
+ * If DATABASE_URL is set, submissions go to PostgreSQL (see database/schema.postgresql.sql).
+ * Otherwise they are appended under ./data as JSONL (local testing without Postgres).
  */
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const { Pool } = require("pg");
 
 const app = express();
 const ROOT = __dirname;
 const DATA = path.join(ROOT, "data");
+
+let pool = null;
+
+function getPool() {
+  const url = process.env.DATABASE_URL && String(process.env.DATABASE_URL).trim();
+  if (!url) return null;
+  if (!pool) {
+    pool = new Pool({ connectionString: url });
+  }
+  return pool;
+}
 
 function appendJsonl(filename, payload) {
   fs.mkdirSync(DATA, { recursive: true });
@@ -16,33 +29,164 @@ function appendJsonl(filename, payload) {
   fs.appendFileSync(path.join(DATA, filename), line, "utf8");
 }
 
+function str(v) {
+  if (v == null) return null;
+  const s = String(v).trim();
+  return s.length ? s : null;
+}
+
+async function resolveServiceTypeId(client, slug) {
+  const safe = /^[a-z0-9-]+$/.test(slug) ? slug : "companionship";
+  let r = await client.query("SELECT id FROM service_types WHERE slug = $1 LIMIT 1", [safe]);
+  if (!r.rows[0]) {
+    r = await client.query("SELECT id FROM service_types WHERE slug = $1 LIMIT 1", ["companionship"]);
+  }
+  if (!r.rows[0]) {
+    throw new Error("service_types has no rows; run database/seed.postgres.sql");
+  }
+  return r.rows[0].id;
+}
+
+async function insertContactHome(client, body) {
+  const fullName = str(body.full_name);
+  const email = str(body.email);
+  const phone = str(body.phone);
+  const message = str(body.message);
+  const composed =
+    [email && `Email: ${email}`, phone && `Phone: ${phone}`, message && `Message:\n${message}`]
+      .filter(Boolean)
+      .join("\n") || "(no message)";
+  await client.query(
+    `INSERT INTO contact_leads (caller_name, care_recipient_name, city_neighborhood, referral_source, message)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [fullName || "Unknown", "Home page contact", null, null, composed]
+  );
+}
+
+async function insertContactLead(client, body) {
+  await client.query(
+    `INSERT INTO contact_leads (caller_name, care_recipient_name, city_neighborhood, referral_source, message)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [
+      str(body.caller_name) || "Unknown",
+      str(body.care_recipient_name) || "Unknown",
+      str(body.city_neighborhood),
+      str(body.referral_source),
+      str(body.message),
+    ]
+  );
+}
+
+async function insertCareRequest(client, body) {
+  const raw = String(body.service || "companionship").toLowerCase();
+  const slug = /^[a-z0-9-]+$/.test(raw) ? raw : "companionship";
+  const serviceTypeId = await resolveServiceTypeId(client, slug);
+  const introRaw = str(body.intro_date);
+  const introDate = introRaw && /^\d{4}-\d{2}-\d{2}$/.test(introRaw) ? introRaw : null;
+  await client.query(
+    `INSERT INTO care_requests (
+      service_type_id, first_name, last_name, email, phone, country_region, address_line,
+      city, postal_code, message, urgency, intro_date, intro_time, location_pref, expanded_evening
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+    [
+      serviceTypeId,
+      str(body.first_name) || "",
+      str(body.last_name) || "",
+      str(body.email) || "",
+      str(body.phone),
+      str(body.country_region),
+      str(body.address_line),
+      str(body.city),
+      str(body.postal_code),
+      str(body.message),
+      str(body.urgency),
+      introDate,
+      str(body.intro_time),
+      str(body.location_pref),
+      false,
+    ]
+  );
+}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.post("/api/contact", (req, res) => {
-  appendJsonl("contact.jsonl", req.body);
-  res.redirect(303, "/thank-you.html?from=contact");
+app.post("/api/contact", async (req, res, next) => {
+  try {
+    const db = getPool();
+    if (db) {
+      const client = await db.connect();
+      try {
+        await insertContactHome(client, req.body);
+      } finally {
+        client.release();
+      }
+    } else {
+      appendJsonl("contact.jsonl", req.body);
+    }
+    res.redirect(303, "/thank-you.html?from=contact");
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post("/api/contact-lead", (req, res) => {
-  appendJsonl("contact-leads.jsonl", req.body);
-  res.redirect(303, "/thank-you.html?from=contact");
+app.post("/api/contact-lead", async (req, res, next) => {
+  try {
+    const db = getPool();
+    if (db) {
+      const client = await db.connect();
+      try {
+        await insertContactLead(client, req.body);
+      } finally {
+        client.release();
+      }
+    } else {
+      appendJsonl("contact-leads.jsonl", req.body);
+    }
+    res.redirect(303, "/thank-you.html?from=contact");
+  } catch (err) {
+    next(err);
+  }
 });
 
-app.post("/api/care-request", (req, res) => {
-  appendJsonl("care-requests.jsonl", req.body);
-  const raw = String(req.body.service || "companionship").toLowerCase();
-  const service = /^[a-z0-9-]+$/.test(raw) ? raw : "companionship";
-  const qs = new URLSearchParams();
-  qs.set("service", service);
-  if (req.body.intro_date) qs.set("date", req.body.intro_date);
-  if (req.body.intro_time) qs.set("time", req.body.intro_time);
-  res.redirect(303, `/thank-you.html?${qs.toString()}`);
+app.post("/api/care-request", async (req, res, next) => {
+  try {
+    const db = getPool();
+    if (db) {
+      const client = await db.connect();
+      try {
+        await insertCareRequest(client, req.body);
+      } finally {
+        client.release();
+      }
+    } else {
+      appendJsonl("care-requests.jsonl", req.body);
+    }
+    const raw = String(req.body.service || "companionship").toLowerCase();
+    const service = /^[a-z0-9-]+$/.test(raw) ? raw : "companionship";
+    const qs = new URLSearchParams();
+    qs.set("service", service);
+    if (req.body.intro_date) qs.set("date", req.body.intro_date);
+    if (req.body.intro_time) qs.set("time", req.body.intro_time);
+    res.redirect(303, `/thank-you.html?${qs.toString()}`);
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.use(express.static(ROOT));
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (res.headersSent) {
+    next(err);
+    return;
+  }
+  res.status(503).type("html").send("<p>We could not save your message. Please try again or call us.</p>");
+});
+
 const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
-  console.log(`Listening on http://localhost:${port}`);
+  const mode = getPool() ? "PostgreSQL" : "JSONL (./data)";
+  console.log(`Listening on http://localhost:${port} — forms: ${mode}`);
 });

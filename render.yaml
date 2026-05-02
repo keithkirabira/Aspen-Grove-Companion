@@ -12,3 +12,6 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
+      # Set in the Render dashboard (Postgres add-on connection string, Neon, Supabase, etc.)
+      - key: DATABASE_URL
+        sync: false
