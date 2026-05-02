@@ -28,3 +28,7 @@ services:
         sync: false
       - key: SMTP_URL
         sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_USER
+        sync: false

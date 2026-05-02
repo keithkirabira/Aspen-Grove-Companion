@@ -8,6 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const { Pool } = require("pg");
 const { sendHomePageContactEmail, getMailModeLabel } = require("./mail");
+const { createAdminRouter } = require("./admin");
 
 const app = express();
 const ROOT = __dirname;
@@ -215,6 +216,8 @@ app.post("/api/care-request", async (req, res, next) => {
   }
 });
 
+app.use("/admin", createAdminRouter(getPool, DATA));
+
 app.use(express.static(ROOT));
 
 app.use((err, req, res, next) => {
@@ -223,6 +226,9 @@ app.use((err, req, res, next) => {
   if (res.headersSent) {
     next(err);
     return;
+  }
+  if (req.originalUrl.startsWith("/admin/api")) {
+    return res.status(500).json({ error: String(err.message || err) });
   }
   const isProd = process.env.NODE_ENV === "production";
   const safeDetail = isProd
@@ -240,5 +246,8 @@ app.use((err, req, res, next) => {
 const port = Number(process.env.PORT) || 3000;
 app.listen(port, () => {
   const mode = getPool() ? "PostgreSQL" : "JSONL (./data)";
-  console.log(`Listening on http://localhost:${port} — forms: ${mode}; home email: ${getMailModeLabel()}`);
+  const adminOn = process.env.ADMIN_PASSWORD && String(process.env.ADMIN_PASSWORD).trim() ? "yes" : "no";
+  console.log(
+    `Listening on http://localhost:${port} — forms: ${mode}; home email: ${getMailModeLabel()}; admin UI: /admin (ADMIN_PASSWORD set: ${adminOn})`
+  );
 });

@@ -115,6 +115,13 @@ After a successful save (Postgres or JSONL), the server can email a copy.
 If no mail env is set, the form still saves; only the notification email is skipped.
 Deploy logs show: "home email: SendGrid API (HTTPS)" / "Resend..." / "SMTP" / "off...".
 
+Admin dashboard (retrieve database rows)
+----------------------------------------
+1. Set **ADMIN_PASSWORD** on the Web service (use a long random value). Optional: **ADMIN_USER** (default `admin`).
+2. Open **https://YOUR-SERVICE.onrender.com/admin/index.html** (or `/admin` → redirects).
+3. When the browser asks for credentials, enter **ADMIN_USER** / **ADMIN_PASSWORD**.
+4. Tabs: contact leads, care requests, scheduled visits (Postgres), and JSONL backup files when DB is off.
+
 Notes
 -----
 - Free web services may spin down after idle; the first request can take ~30s.

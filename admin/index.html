@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Aspen Grove Companion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .admin-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 16px 48px;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      .admin-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ddd8d1;
+        padding-bottom: 16px;
+      }
+      .admin-top h1 {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-size: 1.75rem;
+        margin: 0;
+      }
+      .admin-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .admin-nav button {
+        font: inherit;
+        padding: 8px 14px;
+        border: 1px solid #cfcac3;
+        background: #f8f7f4;
+        cursor: pointer;
+        border-radius: 2px;
+      }
+      .admin-nav button:hover {
+        background: #ece9e4;
+      }
+      .admin-nav button.active {
+        background: #2d3b2f;
+        color: #fff;
+        border-color: #2d3b2f;
+      }
+      .admin-meta {
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 12px;
+      }
+      .admin-table-wrap {
+        overflow: auto;
+        border: 1px solid #e4dfd8;
+        background: #fff;
+        max-height: 70vh;
+      }
+      table.admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .admin-table th,
+      .admin-table td {
+        border-bottom: 1px solid #ece9e4;
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      .admin-table th {
+        background: #f3f1ed;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+      .admin-table td.msg {
+        max-width: 320px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .admin-error {
+        background: #fde8e4;
+        border: 1px solid #e8b6aa;
+        padding: 12px;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+      .admin-back {
+        margin-top: 24px;
+        font-size: 14px;
+      }
+      .admin-back a {
+        color: #2d3b2f;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="admin-wrap">
+      <div class="admin-top">
+        <h1>Submissions</h1>
+        <span class="admin-meta" id="overviewMeta">Loading…</span>
+      </div>
+
+      <nav class="admin-nav" id="nav">
+        <button type="button" data-panel="overview">Overview</button>
+        <button type="button" data-panel="leads">Contact leads</button>
+        <button type="button" data-panel="care">Care requests</button>
+        <button type="button" data-panel="visits">Scheduled visits</button>
+        <button type="button" data-panel="jsonl">JSONL backup</button>
+      </nav>
+
+      <div id="errorBox" class="admin-error" hidden></div>
+      <div id="panel"></div>
+
+      <p class="admin-back"><a href="../index.html">← Public site</a></p>
+    </div>
+
+    <script>
+      function esc(s) {
+        if (s == null || s === "") return "—";
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function fmtDate(iso) {
+        if (!iso) return "—";
+        try {
+          const d = new Date(iso);
+          return isNaN(d.getTime()) ? esc(iso) : d.toLocaleString();
+        } catch {
+          return esc(iso);
+        }
+      }
+
+      const panel = document.getElementById("panel");
+      const errorBox = document.getElementById("errorBox");
+      const overviewMeta = document.getElementById("overviewMeta");
+
+      function showError(msg) {
+        errorBox.hidden = !msg;
+        errorBox.textContent = msg || "";
+      }
+
+      async function api(path) {
+        const r = await fetch(path, { credentials: "same-origin", headers: { Accept: "application/json" } });
+        if (r.status === 401) {
+          showError("Session expired or wrong password — reload the page and sign in again.");
+          throw new Error("401");
+        }
+        const text = await r.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(text.slice(0, 200) || r.statusText);
+        }
+        if (!r.ok) throw new Error(data.error || r.statusText);
+        return data;
+      }
+
+      function setActive(btn) {
+        document.querySelectorAll(".admin-nav button").forEach((b) => b.classList.toggle("active", b === btn));
+      }
+
+      async function loadOverview() {
+        const o = await api("/admin/api/overview");
+        if (o.database && o.counts) {
+          overviewMeta.textContent =
+            "PostgreSQL · contact_leads: " +
+            o.counts.contact_leads +
+            " · care_requests: " +
+            o.counts.care_requests +
+            " · scheduled_visits: " +
+            o.counts.scheduled_visits;
+        } else {
+          overviewMeta.textContent = "No DATABASE_URL — use JSONL backup tab or set Postgres on the server.";
+        }
+        panel.innerHTML =
+          "<p>Use the tabs above to browse rows. This page is protected by the server password (<code>ADMIN_PASSWORD</code>).</p>" +
+          (o.hint ? "<p>" + esc(o.hint) + "</p>" : "");
+      }
+
+      async function loadLeads() {
+        const { rows } = await api("/admin/api/contact-leads?limit=300");
+        if (!rows.length) {
+          panel.innerHTML = "<p>No rows in <code>contact_leads</code>.</p>";
+          return;
+        }
+        const cols = ["id", "created_at", "caller_name", "care_recipient_name", "city_neighborhood", "referral_source", "status", "message"];
+        let thead = "<tr>" + cols.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>";
+        let tbody = rows
+          .map(
+            (row) =>
+              "<tr>" +
+              cols
+                .map((c) => {
+                  const v = row[c];
+                  const cls = c === "message" ? " class=\"msg\"" : "";
+                  return "<td" + cls + ">" + (c === "created_at" ? fmtDate(v) : esc(v)) + "</td>";
+                })
+                .join("") +
+              "</tr>"
+          )
+          .join("");
+        panel.innerHTML = '<div class="admin-table-wrap"><table class="admin-table">' + thead + tbody + "</table></div>";
+      }
+
+      async function loadCare() {
+        const { rows } = await api("/admin/api/care-requests?limit=300");
+        if (!rows.length) {
+          panel.innerHTML = "<p>No rows in <code>care_requests</code>.</p>";
+          return;
+        }
+        const cols = [
+          "id",
+          "created_at",
+          "service_slug",
+          "first_name",
+          "last_name",
+          "email",
+          "phone",
+          "city",
+          "postal_code",
+          "urgency",
+          "status",
+          "intro_date",
+          "intro_time",
+          "message",
+        ];
+        let thead = "<tr>" + cols.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>";
+        let tbody = rows
+          .map(
+            (row) =>
+              "<tr>" +
+              cols
+                .map((c) => {
+                  const v = row[c];
+                  const cls = c === "message" ? " class=\"msg\"" : "";
+                  return "<td" + cls + ">" + (c === "created_at" ? fmtDate(v) : esc(v)) + "</td>";
+                })
+                .join("") +
+              "</tr>"
+          )
+          .join("");
+        panel.innerHTML = '<div class="admin-table-wrap"><table class="admin-table">' + thead + tbody + "</table></div>";
+      }
+
+      async function loadVisits() {
+        const { rows } = await api("/admin/api/scheduled-visits?limit=200");
+        if (!rows.length) {
+          panel.innerHTML = "<p>No rows in <code>scheduled_visits</code>.</p>";
+          return;
+        }
+        const cols = ["id", "starts_at", "ends_at", "service_slug", "title", "status", "service_address", "notes", "care_request_id"];
+        let thead = "<tr>" + cols.map((c) => "<th>" + esc(c) + "</th>").join("") + "</tr>";
+        let tbody = rows
+          .map(
+            (row) =>
+              "<tr>" +
+              cols
+                .map((c) => {
+                  const v = row[c];
+                  const cls = c === "notes" ? " class=\"msg\"" : "";
+                  const cell = c === "starts_at" || c === "ends_at" ? fmtDate(v) : esc(v);
+                  return "<td" + cls + ">" + cell + "</td>";
+                })
+                .join("") +
+              "</tr>"
+          )
+          .join("");
+        panel.innerHTML = '<div class="admin-table-wrap"><table class="admin-table">' + thead + tbody + "</table></div>";
+      }
+
+      async function loadJsonl() {
+        const names = [
+          { id: "contact", label: "Home contact (contact.jsonl)" },
+          { id: "contact-leads", label: "About leads (contact-leads.jsonl)" },
+          { id: "care-requests", label: "Care requests (care-requests.jsonl)" },
+        ];
+        let html = "<p>Raw lines saved when <code>DATABASE_URL</code> is not set (or for debugging).</p>";
+        for (const { id, label } of names) {
+          const { rows, file } = await api("/admin/api/jsonl/" + id);
+          html += "<h3>" + esc(label) + "</h3><p class=\"admin-meta\">" + esc(file) + " · " + rows.length + " lines</p>";
+          if (!rows.length) {
+            html += "<p>Empty.</p>";
+            continue;
+          }
+          html += '<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>#</th><th>Payload</th></tr></thead><tbody>';
+          rows.slice(0, 100).forEach((row, i) => {
+            html += "<tr><td>" + (i + 1) + "</td><td class=\"msg\"><pre style=\"margin:0;font:inherit;white-space:pre-wrap\">" + esc(JSON.stringify(row, null, 2)) + "</pre></td></tr>";
+          });
+          html += "</tbody></table></div>";
+        }
+        panel.innerHTML = html;
+      }
+
+      document.getElementById("nav").addEventListener("click", async (e) => {
+        const btn = e.target.closest("button[data-panel]");
+        if (!btn) return;
+        setActive(btn);
+        showError("");
+        panel.innerHTML = "<p>Loading…</p>";
+        try {
+          const p = btn.getAttribute("data-panel");
+          if (p === "overview") await loadOverview();
+          else if (p === "leads") await loadLeads();
+          else if (p === "care") await loadCare();
+          else if (p === "visits") await loadVisits();
+          else if (p === "jsonl") await loadJsonl();
+        } catch (err) {
+          if (String(err.message) !== "401") showError(String(err.message || err));
+          panel.innerHTML = "";
+        }
+      });
+
+      (async function init() {
+        try {
+          await loadOverview();
+          document.querySelector('.admin-nav button[data-panel="overview"]').classList.add("active");
+        } catch (err) {
+          if (String(err.message) !== "401") showError(String(err.message || err));
+          overviewMeta.textContent = "";
+          panel.innerHTML = "";
+        }
+      })();
+    </script>
+  </body>
+</html>
