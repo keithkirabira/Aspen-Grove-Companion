@@ -1,8 +1,8 @@
 /**
  * Outbound email for home-page contact notifications.
  *
- * Render FREE web services block outbound SMTP (ports 25, 465, 587) — Gmail/SMTP
- * will time out (ETIMEDOUT). Use HTTPS instead:
+ * Some hosts (e.g. certain free / serverless tiers) block outbound SMTP
+ * (ports 25, 465, 587). Use HTTPS APIs instead when SMTP fails:
  *
  *   SENDGRID_API_KEY  → SendGrid Web API (port 443). Create at app.sendgrid.com
  *   EMAIL_FROM        → verified sender in SendGrid
@@ -189,7 +189,7 @@ async function sendViaSmtp({ text, replyTo }) {
 }
 
 /**
- * Prefers HTTPS APIs (works on Render Free). Falls back to SMTP.
+ * Prefers HTTPS APIs when configured; otherwise SMTP (AwardSpace, Gmail, etc.).
  */
 async function sendHomePageContactEmail(body) {
   const msg = buildMessage(body);

@@ -1,7 +1,7 @@
 {
   "name": "aspen-grove-companion-site",
   "private": true,
-  "description": "Static site + minimal form handlers (MySQL or JSONL) for Render or local testing",
+  "description": "Static site + minimal form handlers (MySQL or JSONL) for AwardSpace / local testing",
   "scripts": {
     "start": "node server.js",
     "db:init": "node database/run-sql.js"

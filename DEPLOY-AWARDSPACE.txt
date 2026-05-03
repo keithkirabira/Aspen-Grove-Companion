@@ -1,0 +1,81 @@
+Deploy on AwardSpace (static site + PHP or Node)
+==================================================
+
+**`node_modules/` is never part of the public website.** Anything under
+`node_modules` (including TypeScript files that mention `import … from 'node:url'`)
+only exists for `npm install` on a **development machine** or a **Node server**.
+Browsers never load it when visitors open your pages.
+
+Your setup: upload **HTML, CSS, `assets/`, and (for PHP) the `api/` folder** over
+FTP. Do **not** upload `node_modules/`, `server.js`, or `.env` unless you truly run
+Node on that host (see `.ftpignore`).
+
+What to upload (FTP)
+--------------------
+- **Always:** `index.html`, other `.html` pages, `styles.css`, the whole `assets/`
+  folder (including `assets/api-base.js`).
+- **If using PHP forms (recommended on AwardSpace):** the whole **`api/`**
+  folder, plus **`api/config.local.php`** you create on your PC (from
+  `api/config.sample.php`) and upload — it contains DB passwords; do not commit it
+  to Git (see `.gitignore`).
+
+Do **not** upload: `node_modules/`, `data/`, `.env`.
+
+Forms → PHP + MySQL on AwardSpace (no Node)
+---------------------------------------------
+1. In the hosting panel, create a **MySQL** database and user. In **phpMyAdmin**,
+   run `database/schema.mysql.sql` then `database/seed.mysql.sql` (paste each
+   file’s SQL into the SQL tab).
+2. Copy **`api/config.sample.php`** to **`api/config.local.php`**, set `dsn`,
+   `user`, and `pass` (host is often `localhost`).
+3. FTP the **`api/`** folder next to `index.html` (same level as `assets/`).
+4. Edit **`assets/api-base.js`** before upload:
+
+     window.AGC_FORM_BACKEND = "php";
+     window.AGC_API_BASE = "";
+
+   That points forms at `api/contact.php`, `api/contact-lead.php`, and
+   `api/care-request.php`, which insert rows the same way as `server.js` would.
+
+5. You do **not** need `PUBLIC_SITE_URL` for PHP — redirects use `/thank-you.html`
+   on the same host.
+
+Optional: add email from PHP later (PHPMailer or `mail()`); these scripts only
+save to the database.
+
+Forms → Node API on another host
+---------------------------------
+If you use Node instead of PHP:
+
+1. **`assets/api-base.js`:** keep `AGC_FORM_BACKEND = "node"` and set
+   `AGC_API_BASE` to your Node origin (no trailing slash).
+2. On **Node**, set **`PUBLIC_SITE_URL`** to your AwardSpace site so thank-you
+   redirects land on the static site.
+3. **`DATABASE_URL`** must be a MySQL URL the Node process can reach (often *not*
+   the same DB as AwardSpace if remote MySQL is disabled).
+
+Local testing (Node serves everything)
+--------------------------------------
+  cd this folder
+  npm install
+  npm start
+  Open http://localhost:3000
+
+Use **`AGC_FORM_BACKEND = "node"`** and **`AGC_API_BASE = ""`** so forms hit
+`/api/...` on the same server.
+
+Email
+-----
+On Node: configure `SENDGRID_API_KEY` or SMTP (see `mail.js`). On AwardSpace-only
+PHP, you can later add SMTP in PHP using the panel’s mail settings.
+
+Admin (`/admin`)
+----------------
+Only available if you run **Node** with `ADMIN_PASSWORD` set — not on pure
+static + PHP hosting.
+
+Notes
+-----
+- If the site lives in a subfolder, you may need to change redirect paths in the
+  PHP files from `/thank-you.html` to a path that matches your install.
+- Add spam protection (CAPTCHA) on public forms if you see abuse.

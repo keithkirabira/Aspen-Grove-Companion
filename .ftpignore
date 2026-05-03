@@ -1,0 +1,5 @@
+# Do not upload these to AwardSpace (or any static/FTP host)
+node_modules/
+data/
+.env
+.env.*

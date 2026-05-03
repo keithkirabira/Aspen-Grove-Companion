@@ -4,6 +4,7 @@
  *   $env:DATABASE_URL = "mysql://USER:PASSWORD@HOST:3306/DATABASE" ; npm run db:init
  *
  * Local (no TLS): set MYSQL_SSL=false
+ * Hosting: see DEPLOY-AWARDSPACE.txt (repo root).
  */
 const fs = require("fs");
 const path = require("path");

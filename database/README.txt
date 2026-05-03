@@ -22,16 +22,18 @@ care_requests      Care request form + intro call date/time + location preferenc
 contact_leads      Home + about contact messages
 scheduled_visits   Optional future rows for confirmed visits
 
-MySQL (production / Render)
-----------------------------
-1. Create a MySQL database and user.
+MySQL (production / AwardSpace or any host)
+--------------------------------------------
+1. Create a MySQL database and user (AwardSpace: Hosting Panel → Database Manager).
 2. Set DATABASE_URL to:
      mysql://USER:PASSWORD@HOST:3306/DATABASE_NAME
    (mariadb://… is also accepted.)
 3. From repo root (Node already installed):
      $env:DATABASE_URL = "mysql://…"; npm run db:init
    Local without TLS:  $env:MYSQL_SSL = "false"
-4. Deploy the web service with the same DATABASE_URL.
+   If remote MySQL is blocked, run `schema.mysql.sql` then `seed.mysql.sql` in phpMyAdmin.
+4. Run Node wherever forms POST — use the same DATABASE_URL there. Static FTP
+   hosts (e.g. AwardSpace) do not get node_modules; see DEPLOY-AWARDSPACE.txt.
 
 The Node server uses MySQL when DATABASE_URL starts with mysql:// or mariadb://;
 otherwise submissions go to ./data/*.jsonl. HTML pages only POST to the server.

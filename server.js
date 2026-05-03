@@ -2,6 +2,9 @@
  * Serves the static site and accepts form POSTs.
  * If DATABASE_URL is a mysql:// or mariadb:// URI, submissions go to MySQL (see database/schema.mysql.sql).
  * Otherwise they are appended under ./data as JSONL (local testing without MySQL).
+ *
+ * When static HTML is on AwardSpace (or any other host) and only this app receives POSTs,
+ * set PUBLIC_SITE_URL to that site’s origin so redirects go to /thank-you.html there.
  */
 const express = require("express");
 const fs = require("fs");
@@ -15,6 +18,14 @@ const ROOT = __dirname;
 const DATA = path.join(ROOT, "data");
 
 let pool = null;
+
+/** When static HTML is on another host, redirect users back there after form POST (see PUBLIC_SITE_URL). */
+function absolutePublicRedirect(pathWithQuery) {
+  const raw = process.env.PUBLIC_SITE_URL && String(process.env.PUBLIC_SITE_URL).trim();
+  const base = raw ? raw.replace(/\/$/, "") : "";
+  const suffix = pathWithQuery.startsWith("/") ? pathWithQuery : `/${pathWithQuery}`;
+  return base ? `${base}${suffix}` : suffix;
+}
 
 function getPool() {
   let url = normalizeDatabaseUrl(process.env.DATABASE_URL);
@@ -129,7 +140,7 @@ app.post("/api/contact", async (req, res, next) => {
     } catch (mailErr) {
       console.error("Home contact email failed:", mailErr);
     }
-    res.redirect(303, "/thank-you.html?from=contact");
+    res.redirect(303, absolutePublicRedirect("/thank-you.html?from=contact"));
   } catch (err) {
     next(err);
   }
@@ -143,7 +154,7 @@ app.post("/api/contact-lead", async (req, res, next) => {
     } else {
       appendJsonl("contact-leads.jsonl", req.body);
     }
-    res.redirect(303, "/thank-you.html?from=contact");
+    res.redirect(303, absolutePublicRedirect("/thank-you.html?from=contact"));
   } catch (err) {
     next(err);
   }
@@ -165,7 +176,7 @@ app.post("/api/care-request", async (req, res, next) => {
     if (req.body.intro_time) qs.set("time", req.body.intro_time);
     const locPref = str(req.body.location_pref);
     if (locPref && locPref !== "all") qs.set("location", locPref);
-    res.redirect(303, `/thank-you.html?${qs.toString()}`);
+    res.redirect(303, absolutePublicRedirect(`/thank-you.html?${qs.toString()}`));
   } catch (err) {
     next(err);
   }
@@ -208,7 +219,8 @@ app.listen(port, () => {
   }
   const mode = getPool() ? "MySQL" : "JSONL (./data)";
   const adminOn = process.env.ADMIN_PASSWORD && String(process.env.ADMIN_PASSWORD).trim() ? "yes" : "no";
+  const publicSite = process.env.PUBLIC_SITE_URL && String(process.env.PUBLIC_SITE_URL).trim() ? "yes" : "no";
   console.log(
-    `Listening on http://localhost:${port} — forms: ${mode}; home email: ${getMailModeLabel()}; admin UI: /admin (ADMIN_PASSWORD set: ${adminOn})`
+    `Listening on http://localhost:${port} — forms: ${mode}; home email: ${getMailModeLabel()}; admin UI: /admin (ADMIN_PASSWORD set: ${adminOn}); PUBLIC_SITE_URL set: ${publicSite}`
   );
 });
