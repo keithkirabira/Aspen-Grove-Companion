@@ -1,4 +1,5 @@
--- Aspen Grove Companion — SQLite schema
+-- Aspen Grove Companion — SQLite schema (optional local file DB; not used by server.js).
+-- Production DB: MySQL — see schema.mysql.sql and seed.mysql.sql.
 -- Apply: sqlite3 aspen_grove.db < schema.sqlite.sql && sqlite3 aspen_grove.db < seed.sql
 
 PRAGMA foreign_keys = ON;

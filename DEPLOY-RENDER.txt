@@ -32,31 +32,25 @@ or your Render URL.
 
 Where submissions go
 --------------------
-If the environment variable DATABASE_URL is set (PostgreSQL connection string),
-each POST is stored in the tables from database/schema.postgresql.sql
-(contact_leads, care_requests). Run the schema and seed once:
+If DATABASE_URL is set to a **MySQL** connection string (must start with
+`mysql://` or `mariadb://`), each POST is stored in the tables from
+`database/schema.mysql.sql` (contact_leads, care_requests, etc.). Run the
+schema and seed once:
 
-  psql "$DATABASE_URL" -f database/schema.postgresql.sql
-  psql "$DATABASE_URL" -f database/seed.postgres.sql
+  PowerShell (from project root, Node 18+):
+    $env:DATABASE_URL = "mysql://USER:PASSWORD@HOST:3306/DATABASE"
+    npm install
+    npm run db:init
 
-(On Windows PowerShell, use psql with $env:DATABASE_URL.)
+  Local MySQL without TLS:  $env:MYSQL_SSL = "false"
 
-Without installing psql (good for Render free + local Windows)
----------------------------------------------------------------
-1. In Render: open your **PostgreSQL** → **Connections** → copy **External**
-   Database URL (your laptop cannot use the Internal URL).
-2. From your project folder on your computer (after git clone), with Node 18+:
+That runs `database/run-sql.js` (same SSL rules as `server.js`) and applies
+`schema.mysql.sql` then `seed.mysql.sql`.
 
-     PowerShell:
-       $env:DATABASE_URL = "paste-external-url-here"
-       npm install
-       npm run db:init
-
-   That runs database/run-sql.js (same SSL rules as server.js) and applies
-   schema.postgresql.sql then seed.postgres.sql.
-
-3. On your **Web** service, set DATABASE_URL to the **Internal** URL if the web
-   service and database are both on Render (recommended); otherwise External.
+On Render (or any host), create a **MySQL** instance (or external provider such
+as PlanetScale, Railway MySQL, RDS), then paste its URL into DATABASE_URL on the
+Web service. Use the host’s internal URL when the web app and DB are in the
+same network; otherwise use the public URL from your laptop for `npm run db:init`.
 
 If DATABASE_URL is not set, each POST is appended to JSONL files for local
 testing only:
@@ -66,16 +60,16 @@ testing only:
 
 If forms return "We could not save your message"
 -------------------------------------------------
-1. Web service must have DATABASE_URL pointing at the database where you ran the
-   SQL files (Render: link Postgres to the service, or paste Internal/External URL).
-2. Run schema + seed (commands above). Log code 42P01 means a table is missing.
-3. TLS: non-localhost URLs use SSL by default. Certificate errors: try env
-   PGSSL_REJECT_UNAUTHORIZED=false only if your host docs recommend it. For local
-   Postgres without TLS, use @localhost in the URL or set DATABASE_SSL=false.
+1. Web service must have DATABASE_URL as `mysql://…` pointing at the database
+   where you ran `npm run db:init` (schema + seed).
+2. MySQL error **1146** means a table is missing — run `npm run db:init` again.
+3. TLS: non-localhost URLs use SSL by default (`rejectUnauthorized: false` unless
+   MYSQL_SSL_REJECT_UNAUTHORIZED=true). For local MySQL without TLS, set
+   MYSQL_SSL=false.
 
 Home page contact form → email (solomon.bagambe1011@gmail.com)
 ---------------------------------------------------------------
-After a successful save (Postgres or JSONL), the server can email a copy.
+After a successful save (MySQL or JSONL), the server can email a copy.
 
   **Render FREE web services block outbound SMTP (ports 25, 465, 587).**
   Gmail / nodemailer / SendGrid-SMTP will **time out (ETIMEDOUT)**. Use **HTTPS**
@@ -120,7 +114,7 @@ Admin dashboard (retrieve database rows)
 1. Set **ADMIN_PASSWORD** on the Web service (use a long random value). Optional: **ADMIN_USER** (default `admin`).
 2. Open **https://YOUR-SERVICE.onrender.com/admin/index.html** (or `/admin` → redirects).
 3. When the browser asks for credentials, enter **ADMIN_USER** / **ADMIN_PASSWORD**.
-4. Tabs: contact leads, care requests, scheduled visits (Postgres), and JSONL backup files when DB is off.
+4. Tabs: contact leads, care requests, scheduled visits (MySQL), and JSONL backup files when DB is off.
 
 Notes
 -----

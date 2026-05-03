@@ -12,7 +12,7 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
-      # Set in the Render dashboard (Postgres add-on connection string, Neon, Supabase, etc.)
+      # Set in the Render dashboard: mysql://USER:PASSWORD@HOST:3306/DB (or your host’s MySQL URL)
       - key: DATABASE_URL
         sync: false
       # Render Free blocks SMTP; use SENDGRID_API_KEY + EMAIL_FROM (HTTPS). See DEPLOY-RENDER.txt.

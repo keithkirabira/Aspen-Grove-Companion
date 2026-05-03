@@ -1,4 +1,5 @@
--- Aspen Grove Companion — PostgreSQL schema (Supabase, Neon, RDS, etc.)
+-- Aspen Grove Companion — PostgreSQL schema (reference / migration only).
+-- The app uses MySQL; see schema.mysql.sql and seed.mysql.sql.
 -- Apply: psql $DATABASE_URL -f schema.postgresql.sql && psql $DATABASE_URL -f seed.postgres.sql
 
 CREATE TABLE IF NOT EXISTS service_types (

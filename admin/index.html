@@ -182,14 +182,14 @@
         const o = await api("/admin/api/overview");
         if (o.database && o.counts) {
           overviewMeta.textContent =
-            "PostgreSQL · contact_leads: " +
+            "MySQL · contact_leads: " +
             o.counts.contact_leads +
             " · care_requests: " +
             o.counts.care_requests +
             " · scheduled_visits: " +
             o.counts.scheduled_visits;
         } else {
-          overviewMeta.textContent = "No DATABASE_URL — use JSONL backup tab or set Postgres on the server.";
+          overviewMeta.textContent = "No DATABASE_URL — use JSONL backup tab or set mysql://… on the server.";
         }
         panel.innerHTML =
           "<p>Use the tabs above to browse rows. This page is protected by the server password (<code>ADMIN_PASSWORD</code>).</p>" +

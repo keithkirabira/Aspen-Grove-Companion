@@ -1,15 +1,15 @@
 {
   "name": "aspen-grove-companion-site",
   "private": true,
-  "description": "Static site + minimal form handlers for Render (or local testing)",
+  "description": "Static site + minimal form handlers (MySQL or JSONL) for Render or local testing",
   "scripts": {
     "start": "node server.js",
     "db:init": "node database/run-sql.js"
   },
   "dependencies": {
     "express": "^4.21.2",
-    "nodemailer": "^6.9.16",
-    "pg": "^8.13.1"
+    "mysql2": "^3.12.0",
+    "nodemailer": "^6.9.16"
   },
   "engines": {
     "node": ">=18"
