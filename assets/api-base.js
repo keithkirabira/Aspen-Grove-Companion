@@ -1,17 +1,35 @@
 /**
- * How forms submit:
- *   "node" — POST to this site’s /api/... (default for npm start / Node behind reverse proxy).
- *           If static HTML is elsewhere, set AGC_API_BASE to your Node origin (no trailing slash).
- *   "php"  — POST to api/*.php on the same host (AwardSpace + MySQL, no Node).
+ * Form submit target:
+ *   "node" — POST to /api/... (Express). Use on localhost when running npm start.
+ *   "php"  — POST to api/*.php (AwardSpace + MySQL).
  *
- * The file you may see under node_modules (TypeScript `import … from 'node:url'`) is only for
- * Node dependencies on your computer — it is never uploaded with the website and does not run in the browser.
+ * Leave AGC_FORM_BACKEND as "" for automatic mode:
+ *   localhost / 127.0.0.1 / ::1  →  "node"
+ *   any real domain (e.g. your .ca site)  →  "php"
+ *
+ * Override: set window.AGC_FORM_BACKEND = "node" or "php" before this file (edit the line below).
+ *
+ * If you use Node on another host instead of PHP, set AGC_FORM_BACKEND = "node" and set AGC_API_BASE
+ * to that server’s origin (no trailing slash), and set PUBLIC_SITE_URL on Node for thank-you redirects.
  */
-window.AGC_FORM_BACKEND = "node";
+window.AGC_FORM_BACKEND = "";
 window.AGC_API_BASE = "";
 
 (function () {
-  var backend = typeof window.AGC_FORM_BACKEND === "string" ? window.AGC_FORM_BACKEND.trim().toLowerCase() : "node";
+  var host = (window.location.hostname || "").toLowerCase();
+  var isLocal =
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === "[::1]" ||
+    host === "::1";
+
+  var explicit = typeof window.AGC_FORM_BACKEND === "string" ? window.AGC_FORM_BACKEND.trim().toLowerCase() : "";
+  var backend =
+    explicit === "node" || explicit === "php"
+      ? explicit
+      : isLocal
+        ? "node"
+        : "php";
 
   if (backend === "php") {
     document.querySelectorAll('form[action^="/api/"]').forEach(function (form) {

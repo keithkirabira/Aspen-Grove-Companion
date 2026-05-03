@@ -30,13 +30,14 @@ Forms → PHP + MySQL on AwardSpace (no Node)
 2. Copy **`api/config.sample.php`** to **`api/config.local.php`**, set `dsn`,
    `user`, and `pass` (host is often `localhost`).
 3. FTP the **`api/`** folder next to `index.html` (same level as `assets/`).
-4. Edit **`assets/api-base.js`** before upload:
+4. **`assets/api-base.js`** now defaults to **PHP on real domains** (anything that
+   is not localhost) and **Node on localhost** for `npm start`. You do not have to
+   set `AGC_FORM_BACKEND` unless you want to override (e.g. force `"node"` if you
+   use a remote Node API on the same domain).
 
-     window.AGC_FORM_BACKEND = "php";
-     window.AGC_API_BASE = "";
-
-   That points forms at `api/contact.php`, `api/contact-lead.php`, and
-   `api/care-request.php`, which insert rows the same way as `server.js` would.
+   If you still get **404** after uploading, the server cannot find **`api/contact.php`**:
+   confirm the **`api/`** folder (with `.php` files and `config.local.php`) is next
+   to `index.html` in the same directory on the host, and that PHP is enabled.
 
 5. You do **not** need `PUBLIC_SITE_URL` for PHP — redirects use `/thank-you.html`
    on the same host.
