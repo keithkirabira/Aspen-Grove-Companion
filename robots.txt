@@ -1,0 +1,10 @@
+# Aspen Grove Companion — crawler rules
+# Before launch: replace https://CHANGEME.invalid with your real https site URL in the Sitemap line below.
+
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://CHANGEME.invalid/sitemap.xml

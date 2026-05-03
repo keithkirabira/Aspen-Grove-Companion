@@ -13,7 +13,8 @@ Node on that host (see `.ftpignore`).
 What to upload (FTP)
 --------------------
 - **Always:** `index.html`, other `.html` pages, `styles.css`, the whole `assets/`
-  folder (including `assets/api-base.js`).
+  folder (including `assets/api-base.js`), plus **`robots.txt`**, **`sitemap.xml`**,
+  and **`SEO.txt`** (instructions for replacing the placeholder domain in the first two).
 - **If using PHP forms (recommended on AwardSpace):** the whole **`api/`**
   folder, plus **`api/config.local.php`** you create on your PC (from
   `api/config.sample.php`) and upload — it contains DB passwords; do not commit it
